@@ -13,11 +13,13 @@ class VtkHandler:
     _skull = VtkVolume()
     _detected_landmarks = VtkVolume()
     _real_landmarks = VtkVolume()
+    _renderer: vtk.vtkRenderer
     _colors = vtk.vtkNamedColors()
-    render_window: vtk.vtkRenderWindow
+    _render_window: vtk.vtkRenderWindow
 
-    def __init__(self, render_window):
-        self.render_window = render_window
+    def __init__(self, render_window, renderer):
+        self._render_window = render_window
+        self._renderer = renderer
 
     def _point_to_glyph(self, points):
         bounds = points.GetBounds()
@@ -128,28 +130,25 @@ class VtkHandler:
 
     def _load_landmarks_from_file(self, json_file_path):
         with open(json_file_path, 'r') as json_file:
-            data = json.load(json_file)
-            lps_landmarks = [landmark['position']
-                             for landmark in data['markups'][0]['controlPoints']]
-
-            print(lps_landmarks)
+            landmarks_obj = json.load(json_file)['markups'][0]['controlPoints']
+            lps_landmarks = [obj['position'] for obj in landmarks_obj]
 
         return lps_landmarks
 
     def _detect_landmarks(self):
-        real_landmarks = [[-41.37749481201172, -71.82634735107422, 14.915303230285645], [-35.485530853271484, -72.81812286376953, -5.548721790313721], [7.642332553863525, -93.41370391845703, 15.821390151977539], [54.65541458129883, -71.99036407470703, -4.924007415771484], [58.362796783447266, -74.64672088623047, 14.933220863342285], [62.50477981567383, -69.75077056884766, 20.013507843017578], [-45.34592819213867, -68.8386001586914, 20.963350296020508], [5.025712490081787, -106.49911499023438, -2.1380300521850586], [0.4708743393421173,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         -4.421438217163086, 115.38072204589844]]
+        mock_real_landmarks = [[-41.37749481201172, -71.82634735107422, 14.915303230285645], [-35.485530853271484, -72.81812286376953, -5.548721790313721], [7.642332553863525, -93.41370391845703, 15.821390151977539], [54.65541458129883, -71.99036407470703, -4.924007415771484], [58.362796783447266, -74.64672088623047, 14.933220863342285], [62.50477981567383, -69.75077056884766, 20.013507843017578], [-45.34592819213867, -68.8386001586914, 20.963350296020508], [5.025712490081787, -106.49911499023438, -2.1380300521850586], [0.4708743393421173,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              -4.421438217163086, 115.38072204589844]]
 
-        detected_landmarks = [[-41.37749481201172 + 6, -71.82634735107422, 14.915303230285645], [-35.485530853271484 + 6, -72.81812286376953, -5.548721790313721], [7.642332553863525 + 6, -93.41370391845703, 15.821390151977539], [54.65541458129883 + 6, -71.99036407470703, -4.924007415771484], [58.362796783447266 + 6, -74.64672088623047, 14.933220863342285], [62.50477981567383 + 6, -69.75077056884766, 20.013507843017578], [-45.34592819213867 + 6, -68.8386001586914, 20.963350296020508], [5.025712490081787 + 6, -106.49911499023438, -2.1380300521850586], [0.4708743393421173 + 6,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             -4.421438217163086, 115.38072204589844]]
+        mock_detected_landmarks = [[-41.37749481201172 + 6, -71.82634735107422, 14.915303230285645], [-35.485530853271484 + 6, -72.81812286376953, -5.548721790313721], [7.642332553863525 + 6, -93.41370391845703, 15.821390151977539], [54.65541458129883 + 6, -71.99036407470703, -4.924007415771484], [58.362796783447266 + 6, -74.64672088623047, 14.933220863342285], [62.50477981567383 + 6, -69.75077056884766, 20.013507843017578], [-45.34592819213867 + 6, -68.8386001586914, 20.963350296020508], [5.025712490081787 + 6, -106.49911499023438, -2.1380300521850586], [0.4708743393421173 + 6,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  -4.421438217163086, 115.38072204589844]]
 
-        return real_landmarks, detected_landmarks
+        return mock_real_landmarks, mock_detected_landmarks
 
     def set_skull_opacity(self, opacity_value):
         self._skull.property.SetOpacity(opacity_value / 100)
         self.render_window.Render()
 
-    def setup_detected_landmarks(self, renderer):
+    def setup_detected_landmarks(self):
         real_landmarks, detected_landmarks = self._detect_landmarks()
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
@@ -160,12 +159,12 @@ class VtkHandler:
         self._detected_landmarks.property = detected_landmarks_props
         self._real_landmarks.property = real_landmarks_props
 
-        renderer.AddActor(detected_landmarks_actor)
-        renderer.AddActor(real_landmarks_actor)
+        self._renderer.AddActor(detected_landmarks_actor)
+        self._renderer.AddActor(real_landmarks_actor)
 
         return self._real_landmarks, self._detected_landmarks
 
-    def setup_landmarks_from_file(self, renderer, json_file_path):
+    def setup_landmarks_from_file(self, json_file_path):
         real_landmarks = self._load_landmarks_from_file(json_file_path)
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
@@ -173,16 +172,16 @@ class VtkHandler:
 
         self._real_landmarks.property = real_landmarks_props
 
-        renderer.AddActor(real_landmarks_actor)
+        self._renderer.AddActor(real_landmarks_actor)
 
         return self._real_landmarks
 
-    def setup_skull(self, renderer, file_path):
+    def setup_skull(self, file_path):
         actor, reader, property = self._reconstruct_skull(file_path)
 
         self._skull.reader = reader
         self._skull.property = property
 
-        renderer.AddActor(actor)
+        self._renderer.AddActor(actor)
 
         return self._skull

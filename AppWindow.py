@@ -17,9 +17,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.nii_file_path = "cts.nii.gz"
 
         self.renderer, self.frame, self.vtk_widget, self.interactor, self.render_window = self.setup()
-        self.vtk_handler = VtkHandler(self.render_window)
-        self.skull = self.vtk_handler.setup_skull(
-            self.renderer, self.nii_file_path)
+        self.vtk_handler = VtkHandler(self.render_window, self.renderer)
+
+        self.skull = self.vtk_handler.setup_skull(self.nii_file_path)
 
         self.grid = QtWidgets.QGridLayout()
 
@@ -76,14 +76,14 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.grid.addWidget(wrapper_group_box, 0, 2, 5, 5)
         self.grid.setColumnMinimumWidth(2, 700)
 
-    def create_file_selector(self, label, window_title, name_filter, callback):
+    def create_file_selector(self, label, window_title, name_filter, load_callback):
         file_import_button = QtWidgets.QPushButton(label)
         file_import_button.clicked.connect(
-            lambda _: self.open_file(window_title, name_filter, callback))
+            lambda _: self.open_file(window_title, name_filter, load_callback))
 
         return file_import_button
 
-    def open_file(self, window_title, name_filter, callback):
+    def open_file(self, window_title, name_filter, load_callback):
         dialog = QtWidgets.QFileDialog(self)
         dialog.setWindowTitle(window_title)
         dialog.setNameFilter(name_filter)
@@ -92,7 +92,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         if dialog.exec_():
             selected_file = dialog.selectedFiles()[0]
-            callback(selected_file)
+            load_callback(selected_file)
 
     def add_skull_settings_widget(self):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
@@ -102,7 +102,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             label="Importar arquivo NIFTI",
             window_title='Selecionar arquivo NIFTI',
             name_filter='Arquivos nii.gz (*.nii.gz)',
-            callback=lambda file_path: self.vtk_handler.setup_skull(
+            load_callback=lambda file_path: self.vtk_handler.setup_skull(
                 self.renderer, file_path)
         )
         skull_group_layout.addWidget(skull_file_selector, 1, 0, 1, 3)
@@ -124,7 +124,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
         detect_landmarks_button.clicked.connect(
-            lambda _: self.vtk_handler.setup_detected_landmarks(self.renderer))
+            self.vtk_handler.setup_detected_landmarks)
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
         landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
 
@@ -132,8 +132,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             label="Importar pontos fiduciais",
             window_title='Selecionar JSON com pontos fiduciais',
             name_filter='Arquivos JSON (*.json)',
-            callback=lambda file_path: self.vtk_handler.setup_landmarks_from_file(
-                self.renderer, file_path)
+            load_callback=lambda file_path: self.vtk_handler.setup_landmarks_from_file(
+                file_path)
         )
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Manual"), 2, 0)
         landmarks_group_layout.addWidget(landmarks_file_selector, 2, 1)
