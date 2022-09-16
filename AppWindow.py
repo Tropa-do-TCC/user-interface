@@ -18,7 +18,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.renderer, self.frame, self.vtk_widget, self.interactor, self.render_window = self.setup()
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
 
-        self.skull = self.vtk_handler.setup_skull(self.nii_file_path)
+        self.skull = None
 
         self.grid = QtWidgets.QGridLayout()
 
@@ -31,7 +31,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.setWindowTitle("Detecção de pontos fiduciais cefalométricos")
         self.frame.setLayout(self.grid)
         self.setCentralWidget(self.frame)
-        self.set_axial_view()
         self.interactor.Initialize()
         self.show()
 
@@ -56,19 +55,21 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         wrapper_group_box = QtWidgets.QGroupBox()
         wrapper_layout = QtWidgets.QVBoxLayout()
-
+        
+        # vtk window view
         vtk_group_title = f"Crânio: {base_brain_file}"
         vtk_group_box = QtWidgets.QGroupBox(vtk_group_title)
         vtk_layout = QtWidgets.QVBoxLayout()
         vtk_layout.addWidget(self.vtk_widget)
         vtk_group_box.setLayout(vtk_layout)
 
-        reset_button = QtWidgets.QPushButton("Resetar visualização")
-        reset_button.setFixedSize(150, 30)
-        reset_button.clicked.connect(lambda _: None)
+        # reset view button
+        reset_view_button = QtWidgets.QPushButton("Resetar visualização")
+        reset_view_button.setFixedSize(150, 30)
+        reset_view_button.clicked.connect(lambda _: None)
 
         wrapper_layout.addWidget(vtk_group_box)
-        wrapper_layout.addWidget(reset_button)
+        wrapper_layout.addWidget(reset_view_button)
 
         wrapper_group_box.setLayout(wrapper_layout)
 
@@ -93,26 +94,42 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             selected_file = dialog.selectedFiles()[0]
             load_callback(selected_file)
 
+    def set_skull(self, file_path):
+        self.skull = self.vtk_handler.setup_skull(file_path)
+        self.vtk_handler.set_sagittal_view()
+
+    def set_real_landmarks(self, file_path):
+        self.real_landmarks = self.vtk_handler.setup_landmarks_from_file(file_path)
+        self.vtk_handler.set_sagittal_view()
+
+    def set_detected_landmarks(self):
+        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks()
+        self.vtk_handler.set_sagittal_view()
+
     def add_skull_settings_widget(self):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
         skull_group_layout = QtWidgets.QGridLayout()
 
+        # import nii file button
         skull_file_selector = self.create_file_selector(
             label="Importar arquivo NIFTI",
             window_title='Selecionar arquivo NIFTI',
             name_filter='Arquivos nii.gz (*.nii.gz)',
-            load_callback=lambda file_path: self.vtk_handler.setup_skull(
-                self.renderer, file_path)
+            load_callback=self.set_skull
         )
         skull_group_layout.addWidget(skull_file_selector, 1, 0, 1, 3)
 
+        # separator 
         skull_group_layout.addWidget(self.create_separator(), 2, 0, 1, 3)
 
+        # skull opacity slider
         skull_opacity_slider = self.create_slider(
             min_value=0,
             max_value=1,
-            value=self.skull.property.GetOpacity() * 100,
-            change_callback=self.vtk_handler.set_skull_opacity)
+            initial_value=self.skull.property.GetOpacity() * 100 if self.skull is not None else 0,
+            change_callback=self.vtk_handler.set_skull_opacity
+        )
+        
         skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
         skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
 
@@ -123,25 +140,29 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais")
         landmarks_group_layout = QtWidgets.QGridLayout()
 
+        # detect landmarks button
         detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
-        detect_landmarks_button.clicked.connect(
-            self.vtk_handler.setup_detected_landmarks)
+        detect_landmarks_button.clicked.connect(self.set_detected_landmarks)
+        
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
         landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
 
+        # import landmarks button        
         landmarks_file_selector = self.create_file_selector(
             label="Importar pontos fiduciais",
             window_title='Selecionar JSON com pontos fiduciais',
             name_filter='Arquivos JSON (*.json)',
-            load_callback=lambda file_path: self.vtk_handler.setup_landmarks_from_file(
-                file_path)
+            load_callback=self.set_real_landmarks
         )
+
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Manual"), 2, 0)
         landmarks_group_layout.addWidget(landmarks_file_selector, 2, 1)
 
+        # separator
         landmarks_group_layout.addWidget(self.create_separator(), 3, 0, 1, 3)
 
+        # landmarks visible checkbox
         landmarks_visible_checkbox = QtWidgets.QCheckBox("Visível")
         landmarks_group_layout.addWidget(
             landmarks_visible_checkbox, 4, 0, 1, 3)
@@ -150,22 +171,26 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.grid.addWidget(landmarks_group_box, 1, 0, 2, 2)
 
     def add_views_widget(self):
-        axial_view = QtWidgets.QPushButton("Axial")
-        coronal_view = QtWidgets.QPushButton("Coronal")
-        sagittal_view = QtWidgets.QPushButton("Sagittal")
-
         views_box = QtWidgets.QGroupBox("Visualização")
         views_box_layout = QtWidgets.QVBoxLayout()
+
+        # axial view button 
+        axial_view = QtWidgets.QPushButton("Axial")
+        axial_view.clicked.connect(self.vtk_handler.set_axial_view)
         views_box_layout.addWidget(axial_view)
+        
+        # coronal view button
+        coronal_view = QtWidgets.QPushButton("Coronal")
+        coronal_view.clicked.connect(self.vtk_handler.set_coronal_view)
         views_box_layout.addWidget(coronal_view)
+        
+        # sagittal view button
+        sagittal_view = QtWidgets.QPushButton("Sagittal")
+        sagittal_view.clicked.connect(self.vtk_handler.set_sagittal_view)
         views_box_layout.addWidget(sagittal_view)
 
         views_box.setLayout(views_box_layout)
         self.grid.addWidget(views_box, 3, 0, 2, 2)
-
-        axial_view.clicked.connect(self.vtk_handler.set_axial_view)
-        coronal_view.clicked.connect(self.vtk_handler.set_coronal_view)
-        sagittal_view.clicked.connect(self.vtk_handler.set_sagittal_view)
 
     def create_separator(self):
         separator = QtWidgets.QWidget()
@@ -180,9 +205,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         slider = QtWidgets.QSlider(Qt.Qt.Horizontal)
         slider.setValue(int(initial_value))
 
-        slider.valueChanged.connect(lambda _: change_callback(slider.value()))
-
         slider.setMinimum(min_value * 100)
         slider.setMaximum(max_value * 100)
+
+        slider.valueChanged.connect(lambda _: change_callback(slider.value()))
 
         return slider
