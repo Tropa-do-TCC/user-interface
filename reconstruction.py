@@ -44,6 +44,42 @@ class VtkHandler:
 
         return actor
 
+        def set_axial_view(self):
+            self.renderer.ResetCamera()
+        focal_point = self.renderer.GetActiveCamera().GetFocalPoint()
+        position = self.renderer.GetActiveCamera().GetPosition()
+        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
+            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+        self.renderer.GetActiveCamera().SetPosition(
+            focal_point[0], focal_point[1], focal_point[2] + distance)
+        self.renderer.GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
+        self.renderer.GetActiveCamera().Zoom(1.8)
+        self.render_window.Render()
+
+    def set_coronal_view(self):
+        self.renderer.ResetCamera()
+        focal_point = self.renderer.GetActiveCamera().GetFocalPoint()
+        position = self.renderer.GetActiveCamera().GetPosition()
+        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
+            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+        self.renderer.GetActiveCamera().SetPosition(
+            focal_point[0], focal_point[2] - distance, focal_point[1])
+        self.renderer.GetActiveCamera().SetViewUp(0.0, 0.5, 0.5)
+        self.renderer.GetActiveCamera().Zoom(1.8)
+        self.render_window.Render()
+
+    def set_sagittal_view(self):
+        self.renderer.ResetCamera()
+        focal_point = self.renderer.GetActiveCamera().GetFocalPoint()
+        position = self.renderer.GetActiveCamera().GetPosition()
+        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
+            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+        self.renderer.GetActiveCamera().SetPosition(
+            focal_point[2] + distance, focal_point[0], focal_point[1])
+        self.renderer.GetActiveCamera().SetViewUp(0.0, 0.0, 1.0)
+        self.renderer.GetActiveCamera().Zoom(1.6)
+        self.render_window.Render()
+
     def _reconstruct_skull(self, file_name):
         reader = vtk.vtkNIFTIImageReader()
         reader.SetFileNameSliceOffset(1)

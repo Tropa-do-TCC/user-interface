@@ -1,4 +1,3 @@
-import math
 import os
 
 import PyQt5.QtCore as Qt
@@ -110,7 +109,10 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_group_layout.addWidget(self.create_separator(), 2, 0, 1, 3)
 
         skull_opacity_slider = self.create_slider(
-            0, 1, self.skull.property.GetOpacity() * 100, self.vtk_handler.set_skull_opacity)
+            min_value=0,
+            max_value=1,
+            value=self.skull.property.GetOpacity() * 100,
+            change_callback=self.vtk_handler.set_skull_opacity)
         skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
         skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
 
@@ -161,45 +163,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         views_box.setLayout(views_box_layout)
         self.grid.addWidget(views_box, 3, 0, 2, 2)
 
-        axial_view.clicked.connect(self.set_axial_view)
-        coronal_view.clicked.connect(self.set_coronal_view)
-        sagittal_view.clicked.connect(self.set_sagittal_view)
-
-    def set_axial_view(self):
-        self.renderer.ResetCamera()
-        focal_point = self.renderer.GetActiveCamera().GetFocalPoint()
-        position = self.renderer.GetActiveCamera().GetPosition()
-        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
-        self.renderer.GetActiveCamera().SetPosition(
-            focal_point[0], focal_point[1], focal_point[2] + distance)
-        self.renderer.GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
-        self.renderer.GetActiveCamera().Zoom(1.8)
-        self.render_window.Render()
-
-    def set_coronal_view(self):
-        self.renderer.ResetCamera()
-        focal_point = self.renderer.GetActiveCamera().GetFocalPoint()
-        position = self.renderer.GetActiveCamera().GetPosition()
-        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
-        self.renderer.GetActiveCamera().SetPosition(
-            focal_point[0], focal_point[2] - distance, focal_point[1])
-        self.renderer.GetActiveCamera().SetViewUp(0.0, 0.5, 0.5)
-        self.renderer.GetActiveCamera().Zoom(1.8)
-        self.render_window.Render()
-
-    def set_sagittal_view(self):
-        self.renderer.ResetCamera()
-        focal_point = self.renderer.GetActiveCamera().GetFocalPoint()
-        position = self.renderer.GetActiveCamera().GetPosition()
-        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
-        self.renderer.GetActiveCamera().SetPosition(
-            focal_point[2] + distance, focal_point[0], focal_point[1])
-        self.renderer.GetActiveCamera().SetViewUp(0.0, 0.0, 1.0)
-        self.renderer.GetActiveCamera().Zoom(1.6)
-        self.render_window.Render()
+        axial_view.clicked.connect(self.vtk_handler.set_axial_view)
+        coronal_view.clicked.connect(self.vtk_handler.set_coronal_view)
+        sagittal_view.clicked.connect(self.vtk_handler.set_sagittal_view)
 
     def create_separator(self):
         separator = QtWidgets.QWidget()
