@@ -2,11 +2,12 @@ import vtk
 
 import math
 
-from landmarksUtils import (
-    load_landmarks_from_file, 
+from utils.landmarks_utils import (
+    load_landmarks_from_file,
     convert_landmarks_to_ras_coordinates,
     get_landmarks_from_network_infer
 )
+
 
 class VtkVolume:
     def __init__(self):
@@ -54,7 +55,7 @@ class VtkHandler:
         focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
         position = self._renderer.GetActiveCamera().GetPosition()
         distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+                position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
         self._renderer.GetActiveCamera().SetPosition(
             focal_point[0], focal_point[1], focal_point[2] + distance)
         self._renderer.GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
@@ -66,7 +67,7 @@ class VtkHandler:
         focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
         position = self._renderer.GetActiveCamera().GetPosition()
         distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+                position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
         self._renderer.GetActiveCamera().SetPosition(
             focal_point[0], focal_point[2] - distance, focal_point[1])
         self._renderer.GetActiveCamera().SetViewUp(0.0, 0.5, 0.5)
@@ -78,7 +79,7 @@ class VtkHandler:
         focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
         position = self._renderer.GetActiveCamera().GetPosition()
         distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+                position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
         self._renderer.GetActiveCamera().SetPosition(
             focal_point[2] + distance, focal_point[0], focal_point[1])
         self._renderer.GetActiveCamera().SetViewUp(0.0, 0.0, 1.0)
@@ -165,10 +166,10 @@ class VtkHandler:
 
     def set_skull_opacity(self, opacity_value):
         self._skull.property.SetOpacity(opacity_value / 100)
-        self.render_window.Render()
+        self._render_window.Render()
 
-    def setup_detected_landmarks(self):
-        real_landmarks, detected_landmarks = get_landmarks_from_network_infer()
+    def setup_detected_landmarks(self, path_skull):
+        real_landmarks, detected_landmarks = get_landmarks_from_network_infer(path_skull)
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
             real_landmarks, "tomato")
@@ -196,6 +197,7 @@ class VtkHandler:
         return self._real_landmarks
 
     def setup_skull(self, file_path):
+        self._renderer.Clear()
         actor, reader, property = self._reconstruct_skull(file_path)
 
         self._skull.reader = reader
@@ -203,4 +205,4 @@ class VtkHandler:
 
         self._renderer.AddActor(actor)
 
-        return self._skull
+        return [self._skull, file_path]

@@ -5,8 +5,7 @@ import PyQt5.QtWidgets as QtWidgets
 import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from reconstruction import VtkHandler
-
+from reconstruction.reconstruction import VtkHandler, VtkVolume
 
 class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def __init__(self, app):
@@ -18,7 +17,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.renderer, self.frame, self.vtk_widget, self.interactor, self.render_window = self.setup()
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
 
-        self.skull = None
+        self.skull = [None, None]
 
         self.grid = QtWidgets.QGridLayout()
 
@@ -55,7 +54,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         wrapper_group_box = QtWidgets.QGroupBox()
         wrapper_layout = QtWidgets.QVBoxLayout()
-        
+
         # vtk window view
         vtk_group_title = f"Crânio: {base_brain_file}"
         vtk_group_box = QtWidgets.QGroupBox(vtk_group_title)
@@ -103,7 +102,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks()
+        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(self.skull[1])
         self.vtk_handler.set_sagittal_view()
 
     def add_skull_settings_widget(self):
@@ -126,10 +125,10 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_opacity_slider = self.create_slider(
             min_value=0,
             max_value=1,
-            initial_value=self.skull.property.GetOpacity() * 100 if self.skull is not None else 0,
+            initial_value=self.skull[0].property.GetOpacity() * 100 if self.skull[0] is not None else 0,
             change_callback=self.vtk_handler.set_skull_opacity
         )
-        
+
         skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
         skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
 
@@ -144,7 +143,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
         detect_landmarks_button.clicked.connect(self.set_detected_landmarks)
-        
+
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
         landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
 
@@ -178,12 +177,12 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         axial_view = QtWidgets.QPushButton("Axial")
         axial_view.clicked.connect(self.vtk_handler.set_axial_view)
         views_box_layout.addWidget(axial_view)
-        
+
         # coronal view button
         coronal_view = QtWidgets.QPushButton("Coronal")
         coronal_view.clicked.connect(self.vtk_handler.set_coronal_view)
         views_box_layout.addWidget(coronal_view)
-        
+
         # sagittal view button
         sagittal_view = QtWidgets.QPushButton("Sagittal")
         sagittal_view.clicked.connect(self.vtk_handler.set_sagittal_view)
