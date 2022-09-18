@@ -1,6 +1,6 @@
-PATH_DATA_FILE_TRAIN = "../data/list_train.txt"
-PATH_DATA_FILE_TRAIN_NETWORK = "../data/list_train.txt"
-PATH_DATA_FILE_TEST_NETWORK = "../data/list_test.txt"
+PATH_DATA_FILE_TRAIN = "./neuralnetwork/data/list_train.txt"
+PATH_DATA_FILE_TRAIN_NETWORK = "./neuralnetwork/data/list_train.txt"
+PATH_DATA_FILE_TEST_NETWORK = "./neuralnetwork/data/list_test.txt"
 
 
 def generate_list_test_with_list(list_read):

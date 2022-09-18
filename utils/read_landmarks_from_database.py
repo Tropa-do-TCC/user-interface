@@ -2,9 +2,9 @@ import os
 from os.path import exists
 import shutil
 
-FOLDER_PATH_LANDMARKS = "../neuralnetwork/data/landmarks_from_ct/"
-FOLDER_PATH_NIFTI = "../neuralnetwork/data/nifit_files_from_ct/"
-FOLDER_PATH_DATA = "../neuralnetwork/data/"
+FOLDER_PATH_LANDMARKS = "./neuralnetwork/data/landmarks_from_ct/"
+FOLDER_PATH_NIFTI = "./neuralnetwork/data/nifit_files_from_ct/"
+FOLDER_PATH_DATA = "./neuralnetwork/data/"
 
 
 def read_landmarks_points(line):

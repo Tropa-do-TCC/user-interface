@@ -8,10 +8,22 @@ def convert_landmarks_to_ras_coordinates(lps_landmarks):
 
 
 def load_landmarks_from_file(json_file_path):
-    with open(json_file_path, 'r') as json_file:
-        landmarks_obj = json.load(json_file)['markups'][0]['controlPoints']
-        lps_landmarks = [obj['position'] for obj in landmarks_obj]
+    extension = json_file_path.split(".")[-1]
+    if extension == "json":
+        with open(json_file_path, 'r') as json_file:
+            landmarks_obj = json.load(json_file)['markups'][0]['controlPoints']
+            lps_landmarks = [obj['position'] for obj in landmarks_obj]
+    elif extension == "txt":
+        with open(json_file_path, 'r') as file:
+            lps_landmarks = []
+            read = file.read().splitlines()
+            for line in read:
+                points = line.split()
+                converted_points = []
 
+                for one_point in points:
+                    converted_points.append(float(one_point))
+                lps_landmarks.append(converted_points)
     return lps_landmarks
 
 

@@ -17,19 +17,26 @@ def read_predict_landmarks(file_path):
     return new_points
 
 
+def read_dataset():
+    # STEP 1: read informations from dataset and generate the files
+    read_landmarks_from_database.create_output_folder()
+    ct_folders_list = read_landmarks_from_database.generate_files_landmarks_and_nifit("./dataset/")
+    print("Dataset foi lido corretamente!")
+
+
 def train_neural_network_with_dataset():
     # STEP 1: read informations from dataset and generate the files
     read_landmarks_from_database.create_output_folder()
     ct_folders_list = read_landmarks_from_database.generate_files_landmarks_and_nifit("../dataset/")
 
     # STEP 2: Create train/test files and made neural network train with read ct's
-    size = len(ct_folders_list)
-    train_set = ct_folders_list[0: int(size*0.7)]
-    test_set = ct_folders_list[int(size*0.7): size]
+    # size = len(ct_folders_list)
+    # train_set = ct_folders_list[0: int(size*0.7)]
+    # test_set = ct_folders_list[int(size*0.7): size]
 
-    generate_train_file.generate_list_train_with_list(train_set)
-    generate_test_file.generate_list_test_with_list(test_set)
-    train.main()
+    # generate_train_file.generate_list_train_with_list(train_set)
+    # generate_test_file.generate_list_test_with_list(test_set)
+    # train.main()
 
 
 def made_a_test_infer_landmarks_and_reconstruct():
@@ -56,8 +63,8 @@ def made_a_test_infer_landmarks_and_reconstruct_with_one_skull(skull_name):
     infer.main()
 
     # STEP 4: Reconstruction with predict landmarks
-    original_landmarks = read_predict_landmarks("../data/landmarks_from_ct/" + skull_name + "_ps.txt")
-    predict_landmarks = read_predict_landmarks("../results/landmarks/test/" + skull_name + "_ps.txt")
+    original_landmarks = read_predict_landmarks("./neuralnetwork/data/landmarks_from_ct/" + skull_name + "_ps.txt")
+    predict_landmarks = read_predict_landmarks("./neuralnetwork/results/landmarks/test/" + skull_name + "_ps.txt")
     print(original_landmarks)
     print(predict_landmarks)
 

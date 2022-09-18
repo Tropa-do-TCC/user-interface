@@ -26,13 +26,13 @@ np.random.seed(0)
 class Config(object):
     """Inference configurations."""
     # File paths
-    data_dir = '../data/nifit_files_from_ct'
-    label_dir = '../data/landmarks_from_ct'
-    train_list_file = '../data/list_train.txt'
-    test_list_file = '../data/list_test.txt'
-    model_dir = '../cnn_model'
+    data_dir = './neuralnetwork/data/nifit_files_from_ct'
+    label_dir = './neuralnetwork/data/landmarks_from_ct'
+    train_list_file = './neuralnetwork/data/list_train.txt'
+    test_list_file = './neuralnetwork/data/list_test.txt'
+    model_dir = './neuralnetwork/cnn_model'
     # Shape model parameters
-    shape_model_file = '../shape_model/shape_model/ShapeModel07-09_76datasets.mat'
+    shape_model_file = './neuralnetwork/shape_model/shape_model/ShapeModel07-09_76datasets.mat'
     eigvec_per = 0.995      # Percentage of eigenvectors to keep
     sd = 3.0                # Standard deviation of shape parameters
     
@@ -140,10 +140,10 @@ def predict(data, config, shape_model, train,
     err, err_mm = compute_err(landmarks_mean, landmarks_gt, pix_dim)
 
     # Save distance error to txt file
-    save.save_err('./results/dist_err', train, names, err, err_mm)
+    save.save_err('./neuralnetwork/results/dist_err', train, names, err, err_mm)
 
     # Save predicted landmarks as txt files. Landmarks are in voxel coordinates. Not in CNN coordinates.
-    save.save_landmarks('./results/landmarks', train, names, landmarks_mean_unscale, config.landmark_unwant)
+    save.save_landmarks('./neuralnetwork/results/landmarks', train, names, landmarks_mean_unscale, config.landmark_unwant)
 
     # Visualisation
     if config.visual:

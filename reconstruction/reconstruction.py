@@ -197,7 +197,6 @@ class VtkHandler:
         return self._real_landmarks
 
     def setup_skull(self, file_path):
-        self._renderer.Clear()
         actor, reader, property = self._reconstruct_skull(file_path)
 
         self._skull.reader = reader

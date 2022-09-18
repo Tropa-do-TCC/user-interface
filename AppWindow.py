@@ -6,6 +6,9 @@ import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
 from reconstruction.reconstruction import VtkHandler, VtkVolume
+from neuralnetwork.execute_neural_network import train_neural_network_with_dataset, read_dataset
+from neuralnetwork import train
+
 
 class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def __init__(self, app):
@@ -102,8 +105,16 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
+        self.real_landmarks = None
+        self.detected_landmarks = None
         self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(self.skull[1])
         self.vtk_handler.set_sagittal_view()
+
+    def set_landmarks_files(self):
+        read_dataset()
+
+    def train_neural_network(self):
+        train()
 
     def add_skull_settings_widget(self):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
@@ -139,6 +150,13 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais")
         landmarks_group_layout = QtWidgets.QGridLayout()
 
+        create_landmarks_button = QtWidgets.QPushButton(
+            "Criar arquivos de pontos fiduciais")
+        create_landmarks_button.clicked.connect(self.set_landmarks_files)
+        train_network_button = QtWidgets.QPushButton(
+            "Treinar rede neural")
+        train_network_button.clicked.connect(self.train_neural_network)
+
         # detect landmarks button
         detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
@@ -146,12 +164,14 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
         landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
+        landmarks_group_layout.addWidget(create_landmarks_button, 3, 0)
+        landmarks_group_layout.addWidget(train_network_button, 4, 0)
 
         # import landmarks button        
         landmarks_file_selector = self.create_file_selector(
             label="Importar pontos fiduciais",
             window_title='Selecionar JSON com pontos fiduciais',
-            name_filter='Arquivos JSON (*.json)',
+            name_filter='Arquivos JSON/TXT (*.*)',
             load_callback=self.set_real_landmarks
         )
 
@@ -159,12 +179,12 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_layout.addWidget(landmarks_file_selector, 2, 1)
 
         # separator
-        landmarks_group_layout.addWidget(self.create_separator(), 3, 0, 1, 3)
+        landmarks_group_layout.addWidget(self.create_separator(), 5, 0, 1, 3)
 
         # landmarks visible checkbox
         landmarks_visible_checkbox = QtWidgets.QCheckBox("Visível")
         landmarks_group_layout.addWidget(
-            landmarks_visible_checkbox, 4, 0, 1, 3)
+            landmarks_visible_checkbox, 6, 0, 1, 3)
 
         landmarks_group_box.setLayout(landmarks_group_layout)
         self.grid.addWidget(landmarks_group_box, 1, 0, 2, 2)

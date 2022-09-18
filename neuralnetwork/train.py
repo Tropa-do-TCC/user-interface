@@ -27,14 +27,14 @@ logging.getLogger('tensorflow').disabled = True
 class Config(object):
     """Training configurations."""
     # File paths
-    data_dir = './data/nifit_files_from_ct'
-    label_dir = './data/landmarks_from_ct'
-    train_list_file = './data/list_train.txt'
-    test_list_file = './data/list_test.txt'
-    log_dir = './logs'
-    model_dir = './cnn_model'
+    data_dir = './neuralnetwork/data/nifit_files_from_ct'
+    label_dir = './neuralnetwork/data/landmarks_from_ct'
+    train_list_file = './neuralnetwork/data/list_train.txt'
+    test_list_file = './neuralnetwork/data/list_test.txt'
+    log_dir = './neuralnetwork/logs'
+    model_dir = './neuralnetwork/cnn_model'
     # Shape model parameters
-    shape_model_file = 'shape_model/shape_model/ShapeModel07-09_76datasets.mat'
+    shape_model_file = './neuralnetwork/shape_model/shape_model/ShapeModel07-09_76datasets.mat'
     eigvec_per = 0.995  # Percentage of eigenvectors to keep
     sd = 3.0  # Standard deviation of shape parameters
     landmark_count = 9  # Number of landmarks
