@@ -40,7 +40,7 @@ class Config(object):
     landmark_unwant = []     # list of unwanted landmark indices
     # Testing parameters
     box_size = 101          # patch size (odd number)
-    max_test_steps = 20     # Number of inference steps
+    max_test_steps = 10     # Number of inference steps
     num_random_init = 5     # Number of random initialisations used
     predict_mode = 1        # How the new patch position is computed.
                             # 0: Classification and regression. Hard classification

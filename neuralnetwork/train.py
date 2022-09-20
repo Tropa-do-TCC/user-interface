@@ -65,7 +65,8 @@ def main():
                                      config.test_list_file,
                                      config.landmark_count,
                                      config.landmark_unwant,
-                                     shape_model)
+                                     shape_model,
+                                     train=True)
 
     # Build graph
     print("Building graph...")

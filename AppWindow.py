@@ -114,7 +114,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         read_dataset()
 
     def train_neural_network(self):
-        train()
+        train.main()
 
     def add_skull_settings_widget(self):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
@@ -136,7 +136,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_opacity_slider = self.create_slider(
             min_value=0,
             max_value=1,
-            initial_value=self.skull[0].property.GetOpacity() * 100 if self.skull[0] is not None else 0,
+            initial_value=self.skull[0].property.GetOpacity() * 100 if self.skull[0] is not None else 100,
             change_callback=self.vtk_handler.set_skull_opacity
         )
 
