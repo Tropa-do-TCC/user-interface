@@ -55,7 +55,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         wrapper_group_box = QtWidgets.QGroupBox()
         wrapper_layout = QtWidgets.QVBoxLayout()
-        
+
         # vtk window view
         vtk_group_title = f"Crânio: {base_brain_file}"
         vtk_group_box = QtWidgets.QGroupBox(vtk_group_title)
@@ -76,6 +76,22 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.grid.addWidget(wrapper_group_box, 0, 2, 5, 5)
         self.grid.setColumnMinimumWidth(2, 700)
 
+    def create_directory_selector(self, label, window_title, load_callback):
+        directory_import_button = QtWidgets.QPushButton(label)
+        directory_import_button.clicked.connect(
+            lambda _: self.open_directory(window_title, label, load_callback))
+
+        return directory_import_button
+
+    def open_directory(self, window_title, label, load_callback):
+        dialog = QtWidgets.QFileDialog(self)
+        dialog.setWindowTitle(window_title)
+        dialog.setDirectory(Qt.QDir.currentPath())
+        directory_path = QtWidgets.QFileDialog.getExistingDirectory(
+            self, label)
+
+        load_callback(directory_path)
+
     def create_file_selector(self, label, window_title, name_filter, load_callback):
         file_import_button = QtWidgets.QPushButton(label)
         file_import_button.clicked.connect(
@@ -94,12 +110,13 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             selected_file = dialog.selectedFiles()[0]
             load_callback(selected_file)
 
-    def set_skull(self, file_path):
-        self.skull = self.vtk_handler.setup_skull(file_path)
+    def set_skull(self, dicom_dir_path):
+        self.skull = self.vtk_handler.setup_skull(dicom_dir_path)
         self.vtk_handler.set_sagittal_view()
 
     def set_real_landmarks(self, file_path):
-        self.real_landmarks = self.vtk_handler.setup_landmarks_from_file(file_path)
+        self.real_landmarks = self.vtk_handler.setup_landmarks_from_file(
+            file_path)
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
@@ -111,25 +128,31 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_group_layout = QtWidgets.QGridLayout()
 
         # import nii file button
-        skull_file_selector = self.create_file_selector(
-            label="Importar arquivo NIFTI",
-            window_title='Selecionar arquivo NIFTI',
-            name_filter='Arquivos nii.gz (*.nii.gz)',
+        # skull_file_selector = self.create_file_selector(
+        #     label="Importar arquivo NIFTI",
+        #     window_title='Selecionar arquivo NIFTI',
+        #     name_filter='Arquivos nii.gz (*.nii.gz)',
+        #     load_callback=self.set_skull
+        # )
+        skull_file_selector = self.create_directory_selector(
+            label="Selecionar DICOMDIR",
+            window_title='Selecionar diretório de tomografias',
             load_callback=self.set_skull
         )
         skull_group_layout.addWidget(skull_file_selector, 1, 0, 1, 3)
 
-        # separator 
+        # separator
         skull_group_layout.addWidget(self.create_separator(), 2, 0, 1, 3)
 
         # skull opacity slider
         skull_opacity_slider = self.create_slider(
             min_value=0,
             max_value=1,
-            initial_value=self.skull.property.GetOpacity() * 100 if self.skull is not None else 0,
+            initial_value=self.skull.property.GetOpacity(
+            ) * 100 if self.skull is not None else 0,
             change_callback=self.vtk_handler.set_skull_opacity
         )
-        
+
         skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
         skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
 
@@ -144,11 +167,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
         detect_landmarks_button.clicked.connect(self.set_detected_landmarks)
-        
+
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
         landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
 
-        # import landmarks button        
+        # import landmarks button
         landmarks_file_selector = self.create_file_selector(
             label="Importar pontos fiduciais",
             window_title='Selecionar JSON com pontos fiduciais',
@@ -174,16 +197,16 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         views_box = QtWidgets.QGroupBox("Visualização")
         views_box_layout = QtWidgets.QVBoxLayout()
 
-        # axial view button 
+        # axial view button
         axial_view = QtWidgets.QPushButton("Axial")
         axial_view.clicked.connect(self.vtk_handler.set_axial_view)
         views_box_layout.addWidget(axial_view)
-        
+
         # coronal view button
         coronal_view = QtWidgets.QPushButton("Coronal")
         coronal_view.clicked.connect(self.vtk_handler.set_coronal_view)
         views_box_layout.addWidget(coronal_view)
-        
+
         # sagittal view button
         sagittal_view = QtWidgets.QPushButton("Sagittal")
         sagittal_view.clicked.connect(self.vtk_handler.set_sagittal_view)

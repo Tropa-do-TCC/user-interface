@@ -1,12 +1,12 @@
-import vtk
-
 import math
 
-from landmarksUtils import (
-    load_landmarks_from_file, 
-    convert_landmarks_to_ras_coordinates,
-    get_landmarks_from_network_infer
-)
+import vtk
+
+from conversionUtils import get_nifti_from_dicom_series
+from landmarksUtils import (convert_landmarks_to_ras_coordinates,
+                            get_landmarks_from_network_infer,
+                            load_landmarks_from_file)
+
 
 class VtkVolume:
     def __init__(self):
@@ -195,12 +195,13 @@ class VtkHandler:
 
         return self._real_landmarks
 
-    def setup_skull(self, file_path):
-        actor, reader, property = self._reconstruct_skull(file_path)
+    def setup_skull(self, dicom_dir_path):
+        get_nifti_from_dicom_series(dicom_dir_path)
+        # actor, reader, property = self._reconstruct_skull(file_path)
 
-        self._skull.reader = reader
-        self._skull.property = property
+        # self._skull.reader = reader
+        # self._skull.property = property
 
-        self._renderer.AddActor(actor)
+        # self._renderer.AddActor(actor)
 
-        return self._skull
+        # return self._skull
