@@ -2,7 +2,7 @@ import math
 
 import vtk
 
-from conversionUtils import get_nifti_from_dicom_series
+from conversionUtils import get_nifti_from_dicomdir
 from landmarksUtils import (convert_landmarks_to_ras_coordinates,
                             get_landmarks_from_network_infer,
                             load_landmarks_from_file)
@@ -196,12 +196,13 @@ class VtkHandler:
         return self._real_landmarks
 
     def setup_skull(self, dicom_dir_path):
-        get_nifti_from_dicom_series(dicom_dir_path)
-        # actor, reader, property = self._reconstruct_skull(file_path)
+        nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
 
-        # self._skull.reader = reader
-        # self._skull.property = property
+        actor, reader, property = self._reconstruct_skull(nifti_file_name)
 
-        # self._renderer.AddActor(actor)
+        self._skull.reader = reader
+        self._skull.property = property
 
-        # return self._skull
+        self._renderer.AddActor(actor)
+
+        return self._skull
