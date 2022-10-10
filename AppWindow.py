@@ -92,7 +92,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         directory_path = QtWidgets.QFileDialog.getExistingDirectory(
             self, label)
 
-        load_callback(directory_path)
+        if directory_path:
+            load_callback(directory_path)
 
     def create_file_selector(self, label, window_title, name_filter, load_callback):
         file_import_button = QtWidgets.QPushButton(label)
