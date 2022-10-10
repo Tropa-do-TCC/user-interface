@@ -1,4 +1,3 @@
-import os
 
 import PyQt5.QtCore as Qt
 import PyQt5.QtWidgets as QtWidgets
@@ -15,7 +14,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.app = app
         QtWidgets.QMainWindow.__init__(self, None)
 
-        self.nii_file_path = "cts.nii.gz"
+        self.patient_name = "cts.nii.gz"
 
         self.renderer, self.frame, self.vtk_widget, self.interactor, self.render_window = self.setup()
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
@@ -53,14 +52,13 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         return renderer, frame, vtk_widget, interactor, render_window
 
     def add_vtk_widget(self):
-        base_brain_file = os.path.basename(self.nii_file_path)
-
         wrapper_group_box = QtWidgets.QGroupBox()
         wrapper_layout = QtWidgets.QVBoxLayout()
 
         # vtk window view
-        vtk_group_title = f"Crânio: {base_brain_file}"
+        vtk_group_title = "Visualização do crânio"
         vtk_group_box = QtWidgets.QGroupBox(vtk_group_title)
+        self.group_box_widget = vtk_group_box
         vtk_layout = QtWidgets.QVBoxLayout()
         vtk_layout.addWidget(self.vtk_widget)
         vtk_group_box.setLayout(vtk_layout)
@@ -114,7 +112,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             load_callback(selected_file)
 
     def set_skull(self, dicom_dir_path):
-        self.skull = self.vtk_handler.setup_skull(dicom_dir_path)
+        self.skull, patient_name = self.vtk_handler.setup_skull(dicom_dir_path)
+        self.group_box_widget.setTitle(
+            f"Visualização do crânio: {patient_name}")
         self.vtk_handler.set_sagittal_view()
 
     def set_real_landmarks(self, file_path):

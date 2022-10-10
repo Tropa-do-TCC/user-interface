@@ -2,6 +2,7 @@ import math
 
 import vtk
 from conversionUtils import get_nifti_from_dicomdir
+from dicomUtils import get_patient_name
 from landmarksUtils import (convert_landmarks_to_ras_coordinates,
                             get_landmarks_from_network_infer,
                             load_landmarks_from_file)
@@ -200,6 +201,7 @@ class VtkHandler:
 
     def setup_skull(self, dicom_dir_path):
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
+        patient_name = get_patient_name(dicom_dir_path)
 
         actor, reader, property = self._reconstruct_skull(nifti_file_name)
 
@@ -208,4 +210,4 @@ class VtkHandler:
 
         self._renderer.AddActor(actor)
 
-        return self._skull
+        return self._skull, patient_name
