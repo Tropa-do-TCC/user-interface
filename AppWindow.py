@@ -5,7 +5,7 @@ import PyQt5.QtWidgets as QtWidgets
 import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from neuralnetwork import train
+from neuralnetwork import infer, train
 from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
 
@@ -68,7 +68,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         # reset view button
         reset_view_button = QtWidgets.QPushButton("Resetar visualização")
         reset_view_button.setFixedSize(150, 30)
-        reset_view_buttonreset_view_button.clicked.connect(self.clean_view)
+        reset_view_button.clicked.connect(self.clean_view)
 
         wrapper_layout.addWidget(vtk_group_box)
         wrapper_layout.addWidget(reset_view_button)
@@ -123,9 +123,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        #self.real_landmarks = None
-        #self.detected_landmarks = None
-        #self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(self.skull[1])
         infer.main()
         self.vtk_handler.set_sagittal_view()
 
@@ -134,7 +131,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
     def train_neural_network(self):
         train.main()
-
 
     def clean_view(self):
         self.renderer.RemoveAllViewProps()
