@@ -18,6 +18,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         self.renderer, self.frame, self.vtk_widget, self.interactor, self.render_window = self.setup()
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
+        self.default_vtk_group_box_title = "Visualização do crânio"
 
         self.skull = [None, None]
 
@@ -56,8 +57,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         wrapper_layout = QtWidgets.QVBoxLayout()
 
         # vtk window view
-        vtk_group_title = "Visualização do crânio"
-        vtk_group_box = QtWidgets.QGroupBox(vtk_group_title)
+        vtk_group_box = QtWidgets.QGroupBox(self.default_vtk_group_box_title)
         self.group_box_widget = vtk_group_box
         vtk_layout = QtWidgets.QVBoxLayout()
         vtk_layout.addWidget(self.vtk_widget)
@@ -133,6 +133,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         train.main()
 
     def clean_view(self):
+        self.group_box_widget.setTitle(self.default_vtk_group_box_title)
         self.renderer.RemoveAllViewProps()
         self.renderer.Render()
 
