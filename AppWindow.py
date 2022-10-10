@@ -138,13 +138,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
         skull_group_layout = QtWidgets.QGridLayout()
 
-        # import nii file button
-        # skull_file_selector = self.create_file_selector(
-        #     label="Importar arquivo NIFTI",
-        #     window_title='Selecionar arquivo NIFTI',
-        #     name_filter='Arquivos nii.gz (*.nii.gz)',
-        #     load_callback=self.set_skull
-        # )
         skull_file_selector = self.create_directory_selector(
             label="Selecionar DICOMDIR",
             window_title='Selecionar diretório de tomografias',
