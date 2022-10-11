@@ -184,8 +184,8 @@ class VtkHandler:
 
         return self._real_landmarks, self._detected_landmarks
 
-    def setup_landmarks_from_file(self, json_file_path):
-        real_landmarks = load_landmarks_from_file(json_file_path)
+    def setup_landmarks_from_file(self, file_path):
+        real_landmarks = load_landmarks_from_file(file_path)
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
             real_landmarks, "tomato")
