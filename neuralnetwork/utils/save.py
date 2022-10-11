@@ -5,6 +5,22 @@ import numpy as np
 from plotly.matplotlylib.mplexporter._py3k_compat import xrange
 
 
+def save_time(save_dir, train, time, name=""):
+    if not os.path.isdir(save_dir):
+        os.makedirs(save_dir)
+    if train:
+        suffix = 'train'
+    else:
+        suffix = 'test'
+
+    with open(os.path.join(save_dir, 'mean_running_time_'+suffix + name + '.txt'), 'w') as f:
+        # Record results in pixel
+        f.write("Mean running time\n")
+        f.write("{:.10f} ".format(time))
+        f.write("\n")
+        f.close()
+
+
 def save_err(save_dir, train, names, dist_err, dist_err_mm, name=""):
     """save landmark distance errors in txt file.
 

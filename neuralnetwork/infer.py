@@ -40,8 +40,8 @@ class Config(object):
     landmark_unwant = []     # list of unwanted landmark indices
     # Testing parameters
     box_size = 101          # patch size (odd number)
-    max_test_steps = 10     # Number of inference steps
-    num_random_init = 5     # Number of random initialisations used
+    max_test_steps = 14     # Number of inference steps
+    num_random_init = 3     # Number of random initialisations used
     predict_mode = 1        # How the new patch position is computed.
                             # 0: Classification and regression. Hard classification
                             # 1: Classification and regression. Soft classification. Multiply classification probabilities with regressed distances
@@ -141,6 +141,9 @@ def predict(data, config, shape_model, train,
 
     # Save distance error to txt file
     save.save_err('./neuralnetwork/results/dist_err', train, names, err, err_mm, name=names[i])
+
+    # Save mean time
+    save.save_time('./neuralnetwork/results/time', train, time_elapsed_mean, name=names[i])
 
     # Save predicted landmarks as txt files. Landmarks are in voxel coordinates. Not in CNN coordinates.
     save.save_landmarks('./neuralnetwork/results/landmarks', train, names, landmarks_mean_unscale, config.landmark_unwant)
