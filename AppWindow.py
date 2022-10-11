@@ -4,7 +4,7 @@ import PyQt5.QtWidgets as QtWidgets
 import vtk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-from neuralnetwork import infer, train
+from neuralnetwork import train
 from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
 
@@ -21,6 +21,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.default_vtk_group_box_title = "Visualização do crânio"
 
         self.skull = [None, None]
+
+        self.add_menu_bar()
 
         self.grid = QtWidgets.QGridLayout()
 
@@ -51,6 +53,25 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         interactor.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
 
         return renderer, frame, vtk_widget, interactor, render_window
+
+    def add_menu_bar(self):
+        menu_bar = self.menuBar()
+
+        # Export menu button
+        export_menu = menu_bar.addMenu("&Exportar")
+
+        export_landmarks_action = QtWidgets.QAction(
+            "Exportar pontos fiduciais", self)
+        export_landmarks_action.triggered.connect(self.set_landmarks_files)
+        export_menu.addAction(export_landmarks_action)
+
+        # Neural network menu button
+        neural_network_menu = menu_bar.addMenu("&Rede Neural")
+
+        export_landmarks_action = QtWidgets.QAction(
+            "Treinar modelo", self)
+        export_landmarks_action.triggered.connect(self.train_neural_network)
+        neural_network_menu.addAction(export_landmarks_action)
 
     def add_vtk_widget(self):
         wrapper_group_box = QtWidgets.QGroupBox()
@@ -126,11 +147,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks()
         self.vtk_handler.set_sagittal_view()
 
-    def set_landmarks_files(self):
-        read_dataset()
+    def set_landmarks_files(self): read_dataset()
 
-    def train_neural_network(self):
-        train.main()
+    def train_neural_network(self): train.main()
 
     def clean_view(self):
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
@@ -170,14 +189,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais")
         landmarks_group_layout = QtWidgets.QGridLayout()
 
-        create_landmarks_button = QtWidgets.QPushButton(
-            "Criar arquivos de pontos fiduciais")
-        create_landmarks_button.clicked.connect(self.set_landmarks_files)
-
-        train_network_button = QtWidgets.QPushButton(
-            "Treinar rede neural")
-        train_network_button.clicked.connect(self.train_neural_network)
-
         # detect landmarks button
         detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
@@ -185,9 +196,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
         landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
-
-        landmarks_group_layout.addWidget(create_landmarks_button, 3, 0, 2, 0)
-        landmarks_group_layout.addWidget(train_network_button, 4, 0, 2, 0)
 
         # import landmarks button
         landmarks_file_selector = self.create_file_selector(
@@ -204,9 +212,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_layout.addWidget(self.create_separator(), 5, 0, 1, 3)
 
         # landmarks visible checkbox
-        landmarks_visible_checkbox = QtWidgets.QCheckBox("Visível")
-        landmarks_group_layout.addWidget(
-            landmarks_visible_checkbox, 6, 0, 1, 3)
+        # landmarks_visible_checkbox = QtWidgets.QCheckBox("Visível")
+        # landmarks_group_layout.addWidget(
+        #     landmarks_visible_checkbox, 6, 0, 1, 3)
 
         landmarks_group_box.setLayout(landmarks_group_layout)
         self.grid.addWidget(landmarks_group_box, 1, 0, 2, 2)
