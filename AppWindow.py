@@ -14,8 +14,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.app = app
         QtWidgets.QMainWindow.__init__(self, None)
 
-        self.patient_name = "cts.nii.gz"
-
         self.renderer, self.frame, self.vtk_widget, self.interactor, self.render_window = self.setup()
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
         self.default_vtk_group_box_title = "Visualização do crânio"
@@ -42,6 +40,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def setup():
         renderer = vtk.vtkRenderer()
         frame = QtWidgets.QFrame()
+        frame.setStyleSheet(open('styles.css').read())
         vtk_widget = QVTKRenderWindowInteractor()
         interactor = vtk_widget.GetRenderWindow().GetInteractor()
         render_window = vtk_widget.GetRenderWindow()
@@ -207,9 +206,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Manual"), 2, 0)
         landmarks_group_layout.addWidget(landmarks_file_selector, 2, 1)
-
-        # separator
-        landmarks_group_layout.addWidget(self.create_separator(), 5, 0, 1, 3)
 
         # landmarks visible checkbox
         # landmarks_visible_checkbox = QtWidgets.QCheckBox("Visível")
