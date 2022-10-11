@@ -166,9 +166,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
         skull_group_layout.addWidget(skull_file_selector, 1, 0, 1, 3)
 
-        # separator
-        skull_group_layout.addWidget(self.create_separator(), 2, 0, 1, 3)
-
         # skull opacity slider
         skull_opacity_slider = self.create_slider(
             min_value=0,
@@ -180,6 +177,13 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
         skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
+
+        # segmentation
+        segmentation_combobox = self.create_combobox(
+            items=["EHO", "ABC", "FFA"]
+        )
+        skull_group_layout.addWidget(QtWidgets.QLabel("Segmentação"), 4, 0)
+        skull_group_layout.addWidget(segmentation_combobox, 4, 1, 1, 2)
 
         skull_group_box.setLayout(skull_group_layout)
         self.grid.addWidget(skull_group_box, 0, 0, 1, 2)
@@ -236,6 +240,12 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         views_box.setLayout(views_box_layout)
         self.grid.addWidget(views_box, 3, 0, 2, 2)
+
+    def create_combobox(self, items):
+        combobox = QtWidgets.QComboBox(self)
+        [combobox.addItem(item) for item in items]
+
+        return combobox
 
     def create_separator(self):
         separator = QtWidgets.QWidget()

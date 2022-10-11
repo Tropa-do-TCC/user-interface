@@ -164,6 +164,8 @@ class VtkHandler:
         return points
 
     def set_skull_opacity(self, opacity_value):
+        if self._skull.property is None:
+            return
         self._skull.property.SetOpacity(opacity_value / 100)
         self._render_window.Render()
 

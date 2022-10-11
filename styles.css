@@ -153,6 +153,7 @@ QComboBox {
     border: 2px solid rgb(27, 29, 35);
     padding: 5px;
     padding-left: 10px;
+    color: #fff;
 }
 
 QComboBox:hover {
