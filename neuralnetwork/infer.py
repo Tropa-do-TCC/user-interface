@@ -48,7 +48,7 @@ class Config(object):
                             # 2: Regression only
                             # 3: Classification only
     # Visualisation parameters
-    visual = False           # Whether to save visualisation
+    visual = True           # Whether to save visualisation
 
 
 def main():
@@ -140,7 +140,7 @@ def predict(data, config, shape_model, train,
     err, err_mm = compute_err(landmarks_mean, landmarks_gt, pix_dim)
 
     # Save distance error to txt file
-    save.save_err('./neuralnetwork/results/dist_err', train, names, err, err_mm)
+    save.save_err('./neuralnetwork/results/dist_err', train, names, err, err_mm, name=names[i])
 
     # Save predicted landmarks as txt files. Landmarks are in voxel coordinates. Not in CNN coordinates.
     save.save_landmarks('./neuralnetwork/results/landmarks', train, names, landmarks_mean_unscale, config.landmark_unwant)
@@ -150,11 +150,11 @@ def predict(data, config, shape_model, train,
         print("Show visualisation...")
         for i in xrange(img_count):
             print("Processing visualisation {}/{}: {}".format(i+1, img_count, names[i]))
-            visual.plot_landmarks_2d('./results/landmarks_visual2D', train, names[i], images_unscale[i],
-                                     landmarks_mean_unscale[i], landmarks_gt_unscale[i])
-            visual.plot_landmarks_3d('./results/landmarks_visual3D', train, names[i], landmarks_mean[i],
+            # visual.plot_landmarks_2d('./results/landmarks_visual2D', train, names[i], images_unscale[i],
+            #                         landmarks_mean_unscale[i], landmarks_gt_unscale[i])
+            visual.plot_landmarks_3d('./neuralnetwork/results/landmarks_visual3D', train, names[i], landmarks_mean[i],
                                      landmarks_gt[i], images[i].shape)
-            visual.plot_landmarks_path('./results/landmark_path', train, names[i], landmarks_all_steps[i],
+            visual.plot_landmarks_path('./neuralnetwork/results/landmark_path', train, names[i], landmarks_all_steps[i],
                                        landmarks_gt[i], images[i].shape)
 
 

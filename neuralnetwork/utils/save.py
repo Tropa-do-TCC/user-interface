@@ -5,7 +5,7 @@ import numpy as np
 from plotly.matplotlylib.mplexporter._py3k_compat import xrange
 
 
-def save_err(save_dir, train, names, dist_err, dist_err_mm):
+def save_err(save_dir, train, names, dist_err, dist_err_mm, name=""):
     """save landmark distance errors in txt file.
 
     Args:
@@ -35,7 +35,7 @@ def save_err(save_dir, train, names, dist_err, dist_err_mm):
     dist_err_mm_mean = np.mean(dist_err_mm)
     dist_err_mm_std = np.std(dist_err_mm)
 
-    with open(os.path.join(save_dir, 'dist_error_'+suffix+'.txt'), 'w') as f:
+    with open(os.path.join(save_dir, 'dist_error_'+suffix + name + '.txt'), 'w') as f:
         # Record results in pixel
         f.write("Distance error (pixel)\n")
         for i in xrange(img_count):

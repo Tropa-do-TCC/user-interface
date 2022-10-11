@@ -20,8 +20,18 @@ def read_predict_landmarks(file_path):
 def read_dataset():
     # STEP 1: read informations from dataset and generate the files
     read_landmarks_from_database.create_output_folder()
-    ct_folders_list = read_landmarks_from_database.generate_files_landmarks_and_nifit("./dataset/")
-    print("Dataset foi lido corretamente!")
+    try:
+        ct_folders_list = read_landmarks_from_database.generate_files_landmarks_and_nifit("./dataset/")
+        size = len(ct_folders_list)
+        train_set = ct_folders_list[0: int(size*0.8)]
+        test_set = ct_folders_list[int(size*0.8): size]
+
+        generate_train_file.generate_list_train_with_list(train_set)
+        generate_test_file.generate_list_test_with_list(test_set)
+        print("Dataset foi lido corretamente!")
+        print("Os arquivos de teste e treino também foram gerados!")
+    except Exception as ex:
+        print(ex)
 
 
 def train_neural_network_with_dataset():
@@ -37,6 +47,10 @@ def train_neural_network_with_dataset():
     # generate_train_file.generate_list_train_with_list(train_set)
     # generate_test_file.generate_list_test_with_list(test_set)
     # train.main()
+
+
+def made_a_test_infer_landmarks_and_reconstruct_with_list():
+    infer.main()
 
 
 def made_a_test_infer_landmarks_and_reconstruct():

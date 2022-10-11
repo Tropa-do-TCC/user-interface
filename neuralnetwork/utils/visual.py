@@ -118,9 +118,9 @@ def plot_landmarks_3d(save_dir, train, name, landmarks_mean, landmarks_gt, dim):
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
-    ax.set_xlim([0, dim[0]])
-    ax.set_ylim([0, dim[1]])
-    ax.set_zlim([0, dim[2]])
+    ax.set_xlim([-dim[0], dim[0]])
+    ax.set_ylim([-dim[1], dim[1]])
+    ax.set_zlim([-dim[2], dim[2]])
     if train:
         save_dir = os.path.join(save_dir, 'train')
     else:
@@ -151,7 +151,7 @@ def plot_landmarks_path(save_dir, train, name, landmarks_all_steps, landmarks_gt
     # plt.ion()
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    fig.set_tight_layout(True)
+    #fig.set_tight_layout(True)
     ax.plot(landmarks_gt[:, 0], landmarks_gt[:, 1], landmarks_gt[:, 2], 'rx')
     pt = []
     for j in xrange(num_landmarks):
@@ -160,9 +160,9 @@ def plot_landmarks_path(save_dir, train, name, landmarks_all_steps, landmarks_gt
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_zlabel('z')
-    ax.set_xlim([0, dim[0]])
-    ax.set_ylim([0, dim[1]])
-    ax.set_zlim([0, dim[2]])
+    ax.set_xlim([-dim[0], dim[0]])
+    ax.set_ylim([-dim[1], dim[1]])
+    ax.set_zlim([-dim[2], dim[2]])
     ax.set_title('{}'.format(name))
 
     def update(n):
@@ -173,7 +173,7 @@ def plot_landmarks_path(save_dir, train, name, landmarks_all_steps, landmarks_gt
 
     anim = FuncAnimation(fig, update,
                          frames=np.arange(0, max_test_steps + 1, 1),
-                         interval=400,
+                         interval=600,
                          repeat_delay=3000,
                          repeat=True)
     if train:

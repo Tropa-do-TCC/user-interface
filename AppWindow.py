@@ -7,6 +7,7 @@ from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from neuralnetwork import train
 from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
+from utils.landmarks_utils import get_landmarks_from_network_infer_with_list
 
 
 class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
@@ -143,8 +144,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks()
-        self.vtk_handler.set_sagittal_view()
+        if self.skull[1] is None:
+            get_landmarks_from_network_infer_with_list()
+        else:
+            self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(self.skull[1])
+            self.vtk_handler.set_sagittal_view()
 
     def set_landmarks_files(self): read_dataset()
 

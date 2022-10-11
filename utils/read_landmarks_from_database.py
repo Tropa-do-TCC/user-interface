@@ -55,6 +55,7 @@ def generate_files_landmarks_and_nifit(file_path):
             else:
                 file_landmarsk_to_read = "/landmarks.mrk.json"
 
+            number_landmarks = 0
             with open(file_path + folder + file_landmarsk_to_read) as file_landmarsk:
                 read_lines = file_landmarsk.read().splitlines()
 
@@ -64,6 +65,11 @@ def generate_files_landmarks_and_nifit(file_path):
                         # create txt file with landmarks
                         read_points_description.append(read_landmarks_points(line))
 
+                number_landmarks = len(read_points_description)
+                if number_landmarks != 9:
+                    print(str(folder))
+                    print("Numero de landmarks inválido!")
+                    break
                 print("Número de landmarks lidos na pasta " + str(folder) + " : " + str(len(read_points_description)))
                 create_file_with_landmarks(folder, read_points_description)
 
