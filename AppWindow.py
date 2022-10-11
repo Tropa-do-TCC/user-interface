@@ -123,7 +123,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        infer.main()
+        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks()
         self.vtk_handler.set_sagittal_view()
 
     def set_landmarks_files(self):

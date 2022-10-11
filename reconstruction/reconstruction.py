@@ -1,11 +1,8 @@
 import math
 
 import vtk
-from conversionUtils import get_nifti_from_dicomdir
-from dicomUtils import get_patient_name
-from landmarksUtils import (convert_landmarks_to_ras_coordinates,
-                            get_landmarks_from_network_infer,
-                            load_landmarks_from_file)
+from utils.conversion_utils import get_nifti_from_dicomdir
+from utils.dicom_utils import get_patient_name
 from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    get_landmarks_from_network_infer,
                                    load_landmarks_from_file)
