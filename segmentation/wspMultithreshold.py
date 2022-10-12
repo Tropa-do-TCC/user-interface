@@ -1,21 +1,13 @@
-# %%
 import numpy as np
-import skimage
 from skimage import measure
-import matplotlib.pyplot as plt
 
-# %%
-from ipynb.fs.full.wspFFA import wspFirefly
-from ipynb.fs.full.wspCS import wspCuckooSearch
-from ipynb.fs.full.wspKH import wspKrillHerd
-from ipynb.fs.full.wspEHO import wspElephantHerding
-from ipynb.fs.full.wspABC import wspArtificialBeeColony
-
-# %%
-from ipynb.fs.full.wspShannonEvaluation import wspShannonEvaluation
-from ipynb.fs.full.wspTsallisEvaluation import wspTsallisEvaluation
-
-# %%
+from segmentation.wspABC import wspArtificialBeeColony
+from segmentation.wspCS import wspCuckooSearch
+from segmentation.wspEHO import wspElephantHerding
+from segmentation.wspFFA import wspFirefly
+from segmentation.wspKH import wspKrillHerd
+from segmentation.wspShannonEvaluation import wspShannonEvaluation
+from segmentation.wspTsallisEvaluation import wspTsallisEvaluation
 
 
 def wspGrayHistogram(hu_img):
@@ -30,8 +22,6 @@ def wspGrayHistogram(hu_img):
     hist = hist/np.sum(hist)
 
     return hist, bin_edges, lower_bound, upper_bound
-
-# %%
 
 
 def apply_threshold(img, thresh, lb, ub):
@@ -60,8 +50,6 @@ def apply_threshold(img, thresh, lb, ub):
 
     return img_thres
 
-# %%
-
 
 def get_high_intensity_pixels(dicom_img):
     max_value = dicom_img.max()
@@ -73,8 +61,6 @@ def get_high_intensity_pixels(dicom_img):
     dicom_img = np.where(dicom_img == max_value, max_value, min_value)
 
     return dicom_img
-
-# %%
 
 
 def get_largest_region(pixel_array):
@@ -95,8 +81,6 @@ def get_largest_region(pixel_array):
 
     return mask.astype(np.int16)
 
-# %%
-
 
 def run_firefly(hist, lb, ub, dimension, entropy, q):
     n = 50
@@ -111,8 +95,6 @@ def run_firefly(hist, lb, ub, dimension, entropy, q):
 
     return best_thresholds
 
-# %%
-
 
 def run_cuckoo_search(hist, lb, ub, dimension, entropy, q):
     n = 40
@@ -125,8 +107,6 @@ def run_cuckoo_search(hist, lb, ub, dimension, entropy, q):
 
     return best_thresholds
 
-# %%
-
 
 def run_krill_herd(hist, lb, ub, dimension, entropy, q):
     n = 40
@@ -137,8 +117,6 @@ def run_krill_herd(hist, lb, ub, dimension, entropy, q):
         n, d, maxGeneration, hist, lb, ub, entropy, q)
 
     return best_thresholds
-
-# %%
 
 
 def run_elephant_herding(hist, lb, ub, dimension, entropy, q):
@@ -155,8 +133,6 @@ def run_elephant_herding(hist, lb, ub, dimension, entropy, q):
 
     return best_thresholds
 
-# %%
-
 
 def run_artificial_bee_colony(hist, lb, ub, dimension, entropy, q):
     n = 20
@@ -167,8 +143,6 @@ def run_artificial_bee_colony(hist, lb, ub, dimension, entropy, q):
         n, d, maxGeneration, hist, lb, ub, entropy, q)
 
     return best_thresholds
-
-# %%
 
 
 def switch(alg):
@@ -182,8 +156,6 @@ def switch(alg):
         return run_elephant_herding
     elif alg == 'ABC':
         return run_artificial_bee_colony
-
-# %%
 
 
 def wspMultithreshold(hu_img, algorithm, dimension, q):

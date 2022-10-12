@@ -1,21 +1,11 @@
-# %%
-import random
 import math
-import cv2
-import matplotlib.pyplot as plt
+import random
+
 import numpy as np
-
-# %%
-from ipynb.fs.full.wspShannonEvaluation import wspShannonEvaluation
-from ipynb.fs.full.wspTsallisEvaluation import wspTsallisEvaluation
-
-# %%
 
 
 def get_column(matrix, i):
     return [row[i] for row in matrix]
-
-# %%
 
 
 def findLimits(solution, lb, ub):
@@ -24,8 +14,6 @@ def findLimits(solution, lb, ub):
     solution.sort()
 
     return solution
-
-# %%
 
 
 def wspKrillHerd(n, dim, maxGeneration, hist, lb, ub, objFunc, q):

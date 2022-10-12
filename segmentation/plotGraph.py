@@ -1,8 +1,4 @@
-# %%
 import matplotlib.pyplot as plt
-import numpy as np
-
-# %%
 
 
 def plot_histogram_threshold(hist, bin_edges, threshs):
@@ -10,8 +6,6 @@ def plot_histogram_threshold(hist, bin_edges, threshs):
     plt.title('histogram')
     for t in threshs:
         plt.axvline(x=t, color='r')
-
-# %%
 
 
 def plot_image_histogram(img, hist, bin_edges):
@@ -28,8 +22,6 @@ def plot_image_histogram(img, hist, bin_edges):
 
     plt.show()
 
-# %%
-
 
 def plot_image_histogram_threshold(img, hist, bin_edges, threshs):
     plt.figure(figsize=(15, 5))
@@ -44,14 +36,10 @@ def plot_image_histogram_threshold(img, hist, bin_edges, threshs):
 
     plt.show()
 
-# %%
-
 
 def plot_histogram(hist):
     plt.plot(hist)
     plt.title('Histogram')
-
-# %%
 
 
 def show_image(img, title):

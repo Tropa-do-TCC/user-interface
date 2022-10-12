@@ -8,7 +8,6 @@ from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    get_landmarks_from_network_infer,
                                    load_landmarks_from_file)
 
-import segmentation
 
 class VtkVolume:
     def __init__(self):
@@ -96,17 +95,13 @@ class VtkHandler:
         reader.SetFileName(file_name)
         reader.Update()
 
-        reader = vtk.vtkNIFTIImageReader()
-        reader.SetFileName(file_name)
-        reader.Update()
-
         volume = vtk.vtkImageData()
         volume.DeepCopy(reader.GetOutput())
 
         surface = vtk.vtkFlyingEdges3D()
         surface.SetInputData(volume)
         surface.ComputeNormalsOn()
-        surface.SetValue(0, 100)
+        surface.SetValue(0, 0)
 
         coordinates_transform = vtk.vtkTransform()
         coordinates_transform.SetMatrix(reader.GetQFormMatrix())
@@ -203,7 +198,8 @@ class VtkHandler:
         return self._real_landmarks
 
     def setup_skull_dicom(self, dicom_dir_path, entropy, bioinspired, dimension):
-        dicom_dir_path = segmentation.main(dicom_dir_path, bioinspired, dimension, entropy)
+        # dicom_dir_path = segmentate(
+        #     dicom_dir_path, bioinspired, dimension, entropy)
 
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
         patient_name = get_patient_name(dicom_dir_path)

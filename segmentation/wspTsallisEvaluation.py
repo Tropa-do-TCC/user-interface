@@ -1,13 +1,4 @@
-# %%
 import numpy as np
-
-# %% [markdown]
-# ### Tsallis' Entropy
-#
-# $$S_q(H) = \frac{1 - \sum_{i=1}^{L}(h_i)^q}{q-1}$$
-#
-
-# %%
 
 
 def TsallisEntropy(hist, q):
@@ -26,8 +17,6 @@ def TsallisEntropy(hist, q):
     S_q = (1 - sums)/(q-1)
 
     return S_q
-
-# %%
 
 
 def wspTsallisEvaluation(hist, thresholds, q):

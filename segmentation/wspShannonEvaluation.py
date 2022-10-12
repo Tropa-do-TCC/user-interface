@@ -1,16 +1,7 @@
-# %%
+
 import math
+
 import numpy as np
-
-# %% [markdown]
-# ### Shannon's Entropy
-#
-# $P(H) = \{h_1, h_2, ..., h_L\}$
-#
-# $$S(H) = - \sum_{i=1}^{L}h_i \log_{e}(h_i)$$
-#
-
-# %%
 
 
 def ShannonEntropy(hist):
@@ -25,8 +16,6 @@ def ShannonEntropy(hist):
             S = S + h_i * math.log(h_i, 2)
 
     return -S
-
-# %%
 
 
 def wspShannonEvaluation(hist, thresholds, lb, ub, q=1):

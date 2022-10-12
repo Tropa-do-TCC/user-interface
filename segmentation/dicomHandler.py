@@ -1,11 +1,6 @@
-# %%
 import matplotlib.pyplot as plt
-from pydicom import dcmread
-import os
 import numpy as np
-from pydicom.pixel_data_handlers.util import apply_modality_lut
-
-# %%
+from pydicom import dcmread
 
 
 def transform_to_hu(medical_image, image):
@@ -15,8 +10,6 @@ def transform_to_hu(medical_image, image):
 
     return hu_image
 
-# %%
-
 
 def transform_to_pixel_array(medical_image, hu_image):
     intercept = medical_image.RescaleIntercept
@@ -24,8 +17,6 @@ def transform_to_pixel_array(medical_image, hu_image):
     image = (hu_image - intercept)/slope
 
     return image.astype(np.int16)
-
-# %%
 
 
 def show_dicom_image(med_img, title=""):
@@ -35,15 +26,11 @@ def show_dicom_image(med_img, title=""):
     plt.axis('off')
     plt.show()
 
-# %%
-
 
 def read_dicom_image(file_path):
     medical_image = dcmread(file_path)
     pixel_array = medical_image.pixel_array
     return medical_image, pixel_array
-
-# %%
 
 
 def save_dicom(dicom, new_image, file_path):

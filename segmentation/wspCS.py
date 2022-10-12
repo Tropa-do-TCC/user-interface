@@ -1,15 +1,7 @@
-# %%
-import random
 import math
-import cv2
-import matplotlib.pyplot as plt
+import random
+
 import numpy as np
-
-# %%
-from ipynb.fs.full.wspShannonEvaluation import wspShannonEvaluation
-from ipynb.fs.full.wspTsallisEvaluation import wspTsallisEvaluation
-
-# %%
 
 
 def empty_nests(nest, pa, n, dim, lb, ub):
@@ -32,8 +24,6 @@ def empty_nests(nest, pa, n, dim, lb, ub):
         tempnest[j].sort()
 
     return tempnest
-
-# %%
 
 
 def get_cuckoos(nest, best, lb, ub, n, dim):
@@ -65,7 +55,6 @@ def get_cuckoos(nest, best, lb, ub, n, dim):
     return tempnest
 
 
-# %%
 def get_best_nest(nest, new_nest, fitness, n, dim, hist, lb, ub, objectivefunc, q):
     tempnest = np.zeros((n, dim))
     tempnest = np.copy(nest)
@@ -83,7 +72,6 @@ def get_best_nest(nest, new_nest, fitness, n, dim, hist, lb, ub, objectivefunc, 
     return fmax, bestlocal, tempnest, fitness
 
 
-# %%
 def wspCuckooSearch(n, dim, pa, maxGeneration, hist, lb, ub, objFunc, q):
     """"
     Cuckoo Search algorithm
