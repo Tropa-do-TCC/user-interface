@@ -209,6 +209,7 @@ class VtkHandler:
         self._skull.reader = reader
         self._skull.property = property
         self._skull.patient_name = patient_name
+        self._skull.dicom_dir = dicom_dir_path
         self._skull.nifti_path = os.path.join(os.getcwd(), nifti_file_name)
 
         self._renderer.AddActor(actor)
