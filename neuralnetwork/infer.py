@@ -197,7 +197,7 @@ def predict_landmarks(image, config, shape_model,
 
     for j in xrange(max_test_steps):
         # find path of landmark iteratively
-        print("Step: " + str(j))
+        print("Passo: " + str(j))
         # Predict CNN outputs
         action_ind_val, yc_val, yr_val = sess.run([action_ind, yc, yr], feed_dict={x: patches, keep_prob: 1.0})
 

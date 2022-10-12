@@ -26,7 +26,7 @@ for i=1:length(TrainingData)
     end
     x(:,i)=reshape(TrainingData(i).Vertices', [], 1);
 end
-disp('Nova mtariz criada')
+disp('Nova matriz criada')
 
 xrange=[-512/4, 512/4];
 yrange=[-512/4, 512/4];

@@ -210,3 +210,14 @@ class VtkHandler:
         self._renderer.AddActor(actor)
 
         return self._skull, patient_name
+
+    def setup_skull_nifit(self, file_path):
+        self._renderer.Clear()
+        actor, reader, property = self._reconstruct_skull(file_path)
+
+        self._skull.reader = reader
+        self._skull.property = property
+
+        self._renderer.AddActor(actor)
+
+        return [self._skull, file_path]
