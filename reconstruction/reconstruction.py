@@ -9,6 +9,7 @@ from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    load_landmarks_from_file)
 
 
+# from segmentation.segmentation import segmentate
 class VtkVolume:
     def __init__(self):
         self.reader = None

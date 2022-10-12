@@ -57,3 +57,4 @@ pandas~=1.1.5
 zipp~=3.4.0
 SimpleItk
 pydicom
+scikit-image
