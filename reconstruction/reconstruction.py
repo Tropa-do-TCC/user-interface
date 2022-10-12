@@ -1,12 +1,12 @@
-import vtk
-
 import math
 
-from landmarksUtils import (
-    load_landmarks_from_file, 
-    convert_landmarks_to_ras_coordinates,
-    get_landmarks_from_network_infer
-)
+import vtk
+from utils.conversion_utils import get_nifti_from_dicomdir
+from utils.dicom_utils import get_patient_name
+from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
+                                   get_landmarks_from_network_infer,
+                                   load_landmarks_from_file)
+
 
 class VtkVolume:
     def __init__(self):
@@ -164,11 +164,14 @@ class VtkHandler:
         return points
 
     def set_skull_opacity(self, opacity_value):
+        if self._skull.property is None:
+            return
         self._skull.property.SetOpacity(opacity_value / 100)
-        self.render_window.Render()
+        self._render_window.Render()
 
-    def setup_detected_landmarks(self):
-        real_landmarks, detected_landmarks = get_landmarks_from_network_infer()
+    def setup_detected_landmarks(self, path_skull):
+        real_landmarks, detected_landmarks = get_landmarks_from_network_infer(
+            path_skull)
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
             real_landmarks, "tomato")
@@ -183,8 +186,8 @@ class VtkHandler:
 
         return self._real_landmarks, self._detected_landmarks
 
-    def setup_landmarks_from_file(self, json_file_path):
-        real_landmarks = load_landmarks_from_file(json_file_path)
+    def setup_landmarks_from_file(self, file_path):
+        real_landmarks = load_landmarks_from_file(file_path)
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
             real_landmarks, "tomato")
@@ -195,7 +198,21 @@ class VtkHandler:
 
         return self._real_landmarks
 
-    def setup_skull(self, file_path):
+    def setup_skull(self, dicom_dir_path):
+        nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
+        patient_name = get_patient_name(dicom_dir_path)
+
+        actor, reader, property = self._reconstruct_skull(nifti_file_name)
+
+        self._skull.reader = reader
+        self._skull.property = property
+
+        self._renderer.AddActor(actor)
+
+        return self._skull, patient_name
+
+    def setup_skull_nifit(self, file_path):
+        self._renderer.Clear()
         actor, reader, property = self._reconstruct_skull(file_path)
 
         self._skull.reader = reader
@@ -203,4 +220,4 @@ class VtkHandler:
 
         self._renderer.AddActor(actor)
 
-        return self._skull
+        return [self._skull, file_path]
