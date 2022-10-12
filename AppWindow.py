@@ -62,7 +62,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         export_landmarks_action = QtWidgets.QAction(
             "Exportar pontos fiduciais", self)
-        export_landmarks_action.triggered.connect(self.set_landmarks_files)
+        export_landmarks_action.triggered.connect(self.train_neural_network) # TODO
         export_menu.addAction(export_landmarks_action)
 
         # Neural network menu button
@@ -73,10 +73,10 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         export_landmarks_action.triggered.connect(self.train_neural_network)
         neural_network_menu.addAction(export_landmarks_action)
 
-        export_landmarks_action = QtWidgets.QAction(
+        export_data_action = QtWidgets.QAction(
             "Ler informações da base de dados", self)
-        export_landmarks_action.triggered.connect(self.set_landmarks_files)
-        neural_network_menu.addAction(export_landmarks_action)
+        export_data_action.triggered.connect(self.set_landmarks_files)
+        neural_network_menu.addAction(export_data_action)
 
     def add_vtk_widget(self):
         wrapper_group_box = QtWidgets.QGroupBox()
@@ -170,6 +170,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
         self.renderer.RemoveAllViewProps()
         self.renderer.Render()
+        self.vtk_handler.set_sagittal_view()
 
     def add_skull_settings_widget(self):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
