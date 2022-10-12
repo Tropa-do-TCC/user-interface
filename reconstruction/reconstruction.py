@@ -10,6 +10,7 @@ from utils.dicom_utils import get_patient_name
 from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    get_landmarks_from_network_infer,
                                    load_landmarks_from_file)
+from segmentation import segmentation
 
 
 class VtkVolume:
@@ -210,6 +211,8 @@ class VtkHandler:
     def setup_skull_dicom(self, dicom_dir_path):
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
         patient_name = get_patient_name(dicom_dir_path)
+
+        #new_path = segmentation.main(dicom_dir_path, 'FFA', 2, 1)
 
         actor, reader, property = self._reconstruct_skull(nifti_file_name)
 
