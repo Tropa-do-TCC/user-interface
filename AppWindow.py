@@ -19,7 +19,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
         self.default_vtk_group_box_title = "Visualização do crânio"
 
-        self.skull = [None, None]
+        self.skull = None
 
         self.add_menu_bar()
 
@@ -139,17 +139,12 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             selected_file = dialog.selectedFiles()[0]
             load_callback(selected_file)
 
-    def set_skull(self, dicom_dir_path):
-        self.skull, patient_name = self.vtk_handler.setup_skull(dicom_dir_path)
-        self.group_box_widget.setTitle(
-            f"Visualização do crânio: {patient_name}")
-        self.vtk_handler.set_sagittal_view()
+    def set_skull(self, path):
+        self.skull = self.vtk_handler.setup_skull_nifit(
+            path) if 'nii.gz' in path else self.vtk_handler.setup_skull_dicom(path)
 
-    def set_skull_nifit(self, file_path):
-        # desabilitar o botao de segmentação
-        self.skull = self.vtk_handler.setup_skull_nifit(file_path)
         self.group_box_widget.setTitle(
-            f"Visualização do crânio: {file_path}")
+            f"Visualização do crânio: {self.skull.patient_name}")
         self.vtk_handler.set_sagittal_view()
 
     def set_real_landmarks(self, file_path):
@@ -158,7 +153,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        if self.skull[0] is None:
+        if self.skull is None:
             get_landmarks_from_network_infer_with_list()
         else:
             self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
@@ -179,6 +174,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
         skull_group_layout = QtWidgets.QGridLayout()
 
+        # import dicom button
         skull_file_selector = self.create_directory_selector(
             label="Selecionar DICOMDIR",
             window_title='Selecionar diretório de tomografias',
@@ -186,11 +182,12 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
         skull_group_layout.addWidget(skull_file_selector, 1, 0, 1, 3)
 
+        # import nifti button
         skull_file_selector_nifit = self.create_file_selector(
             label="Importar arquivo NIFTI",
             window_title='Selecionar arquivo NIFTI',
             name_filter='Arquivos nii.gz (*.nii.gz)',
-            load_callback=self.set_skull_nifit
+            load_callback=self.set_skull
         )
         skull_group_layout.addWidget(skull_file_selector_nifit, 2, 0, 1, 3)
 
@@ -198,8 +195,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_opacity_slider = self.create_slider(
             min_value=0,
             max_value=1,
-            initial_value=self.skull[0].property.GetOpacity(
-            ) if self.skull[0] is not None else 1,
+            initial_value=self.skull.property.GetOpacity(
+            ) if self.skull is not None else 1,
             change_callback=self.vtk_handler.set_skull_opacity
         )
 
@@ -215,7 +212,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # segmentation
         segmentation_algorithm_combobox = self.create_combobox(
-            items=['FFA', 'KH', 'CS', 'ABC', 'EHO']
+            items=['FFA', 'KH', 'CS', 'ABC', 'EHO'],
+            change_callback=self.change_algorithm_combobox_callback
         )
         segmentation_group_layout.addWidget(
             QtWidgets.QLabel("Algoritmo"), 0, 0)
@@ -301,9 +299,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         views_box.setLayout(views_box_layout)
         self.grid.addWidget(views_box, 3, 0, 2, 2)
 
-    def create_combobox(self, items):
+    def create_combobox(self, items, change_callback):
         combobox = QtWidgets.QComboBox(self)
         [combobox.addItem(item) for item in items]
+        combobox.activated[str].connect(
+            lambda _: change_callback(combobox.currentText()))
 
         return combobox
 
@@ -335,4 +335,4 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         print(value)
 
     def change_algorithm_combobox_callback(self, value):
-        pass
+        print(value)

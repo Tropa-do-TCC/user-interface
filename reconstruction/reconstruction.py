@@ -1,6 +1,10 @@
 import math
+import os
 
 import vtk
+from segmentation.default_parameters import (DEFAULT_SEGMENTATION_ALG,
+                                             DEFAULT_SEGMENTATION_DIMENSION,
+                                             DEFAULT_SEGMENTATION_ENTROPY)
 from utils.conversion_utils import get_nifti_from_dicomdir
 from utils.dicom_utils import get_patient_name
 from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
@@ -12,6 +16,11 @@ class VtkVolume:
     def __init__(self):
         self.reader = None
         self.property = None
+        self.patient_name = ''
+        self.nifti_path = ''
+        self.segmentation_alg = DEFAULT_SEGMENTATION_ALG
+        self.segmentation_q = DEFAULT_SEGMENTATION_ENTROPY
+        self.segmeentation_dimension = DEFAULT_SEGMENTATION_DIMENSION
 
 
 class VtkHandler:
@@ -198,7 +207,7 @@ class VtkHandler:
 
         return self._real_landmarks
 
-    def setup_skull(self, dicom_dir_path):
+    def setup_skull_dicom(self, dicom_dir_path):
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
         patient_name = get_patient_name(dicom_dir_path)
 
@@ -206,18 +215,24 @@ class VtkHandler:
 
         self._skull.reader = reader
         self._skull.property = property
+        self._skull.patient_name = patient_name
+        self._skull.nifti_path = os.path.join(os.getcwd(), nifti_file_name)
 
         self._renderer.AddActor(actor)
 
-        return self._skull, patient_name
+        return self._skull
 
     def setup_skull_nifit(self, file_path):
         self._renderer.Clear()
         actor, reader, property = self._reconstruct_skull(file_path)
 
+        nifti_name = file_path.split("/")[-1]
+
         self._skull.reader = reader
         self._skull.property = property
+        self._skull.patient_name = nifti_name
+        self._skull.nifti_path = file_path
 
         self._renderer.AddActor(actor)
 
-        return [self._skull, file_path]
+        return self._skull
