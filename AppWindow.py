@@ -26,6 +26,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         self.add_vtk_widget()
         self.add_skull_settings_widget()
+        self.add_segmentation_settings_widget()
         self.add_landmarks_settings_widget()
         self.add_views_widget()
 
@@ -171,22 +172,57 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             min_value=0,
             max_value=1,
             initial_value=self.skull[0].property.GetOpacity(
-            ) * 100 if self.skull[0] is not None else 100,
+            ) if self.skull[0] is not None else 1,
             change_callback=self.vtk_handler.set_skull_opacity
         )
 
         skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
         skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
 
+        skull_group_box.setLayout(skull_group_layout)
+        self.grid.addWidget(skull_group_box, 0, 0, 1, 2)
+
+    def add_segmentation_settings_widget(self):
+        segmentation_group_box = QtWidgets.QGroupBox("Segmentação")
+        segmentation_group_layout = QtWidgets.QGridLayout()
         # segmentation
         segmentation_combobox = self.create_combobox(
             items=["EHO", "ABC", "FFA"]
         )
-        skull_group_layout.addWidget(QtWidgets.QLabel("Segmentação"), 4, 0)
-        skull_group_layout.addWidget(segmentation_combobox, 4, 1, 1, 2)
+        segmentation_group_layout.addWidget(
+            QtWidgets.QLabel("Algoritmo"), 0, 0)
+        segmentation_group_layout.addWidget(segmentation_combobox, 0, 1)
 
-        skull_group_box.setLayout(skull_group_layout)
-        self.grid.addWidget(skull_group_box, 0, 0, 1, 2)
+        # segmentation entropy slider
+        segmentation_entropy_slider = self.create_slider(
+            min_value=-2,
+            max_value=2,
+            initial_value=1,
+            change_callback=lambda value: self.change_entropy_slider_callback(
+                value)
+        )
+
+        segmentation_group_layout.addWidget(
+            QtWidgets.QLabel("Entropia (q)"), 1, 0)
+        segmentation_group_layout.addWidget(
+            segmentation_entropy_slider, 1, 1, 1, 2)
+
+        # segmentation entropy slider
+        segmentation_dimension_slider = self.create_slider(
+            min_value=1,
+            max_value=5,
+            initial_value=2,
+            change_callback=lambda value: self.change_dimension_slider_callback(
+                value)
+        )
+
+        segmentation_group_layout.addWidget(
+            QtWidgets.QLabel("Dimensão"), 2, 0)
+        segmentation_group_layout.addWidget(
+            segmentation_dimension_slider, 2, 1, 1, 2)
+
+        segmentation_group_box.setLayout(segmentation_group_layout)
+        self.grid.addWidget(segmentation_group_box, 1, 0, 1, 2)
 
     def add_landmarks_settings_widget(self):
         landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais")
@@ -211,13 +247,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_layout.addWidget(QtWidgets.QLabel("Manual"), 2, 0)
         landmarks_group_layout.addWidget(landmarks_file_selector, 2, 1)
 
-        # landmarks visible checkbox
-        # landmarks_visible_checkbox = QtWidgets.QCheckBox("Visível")
-        # landmarks_group_layout.addWidget(
-        #     landmarks_visible_checkbox, 6, 0, 1, 3)
-
         landmarks_group_box.setLayout(landmarks_group_layout)
-        self.grid.addWidget(landmarks_group_box, 1, 0, 2, 2)
+        self.grid.addWidget(landmarks_group_box, 2, 0)
 
     def add_views_widget(self):
         views_box = QtWidgets.QGroupBox("Visualização")
@@ -257,12 +288,23 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         return separator
 
     def create_slider(self, min_value, max_value, initial_value, change_callback):
+        print("initial value ", initial_value * 100)
         slider = QtWidgets.QSlider(Qt.Qt.Horizontal)
-        slider.setValue(int(initial_value))
 
         slider.setMinimum(min_value * 100)
         slider.setMaximum(max_value * 100)
 
+        slider.setValue(initial_value * 100)
+
         slider.valueChanged.connect(lambda _: change_callback(slider.value()))
 
         return slider
+
+    def change_entropy_slider_callback(self, value):
+        print(value)
+
+    def change_dimension_slider_callback(self, value):
+        print(value)
+
+    def change_algorithm_combobox_callback(self, value):
+        pass
