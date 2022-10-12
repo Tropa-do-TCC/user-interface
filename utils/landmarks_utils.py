@@ -31,3 +31,7 @@ def get_landmarks_from_network_infer(file_path_cranial):
     real_landmark, detected_landmarks = execute_neural_network.made_a_test_infer_landmarks_and_reconstruct_with_one_skull(
         file_path_cranial.split("/")[-1].split(".")[0])
     return real_landmark, detected_landmarks
+
+def get_landmarks_from_network_infer_with_list():
+    execute_neural_network.made_a_test_infer_landmarks_and_reconstruct_with_list()
+

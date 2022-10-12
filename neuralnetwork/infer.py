@@ -40,15 +40,15 @@ class Config(object):
     landmark_unwant = []     # list of unwanted landmark indices
     # Testing parameters
     box_size = 101          # patch size (odd number)
-    max_test_steps = 10     # Number of inference steps
-    num_random_init = 5     # Number of random initialisations used
+    max_test_steps = 14     # Number of inference steps
+    num_random_init = 3     # Number of random initialisations used
     predict_mode = 1        # How the new patch position is computed.
                             # 0: Classification and regression. Hard classification
                             # 1: Classification and regression. Soft classification. Multiply classification probabilities with regressed distances
                             # 2: Regression only
                             # 3: Classification only
     # Visualisation parameters
-    visual = False           # Whether to save visualisation
+    visual = True           # Whether to save visualisation
 
 
 def main():
@@ -140,7 +140,10 @@ def predict(data, config, shape_model, train,
     err, err_mm = compute_err(landmarks_mean, landmarks_gt, pix_dim)
 
     # Save distance error to txt file
-    save.save_err('./neuralnetwork/results/dist_err', train, names, err, err_mm)
+    save.save_err('./neuralnetwork/results/dist_err', train, names, err, err_mm, name=names[i])
+
+    # Save mean time
+    save.save_time('./neuralnetwork/results/time', train, time_elapsed_mean, name=names[i])
 
     # Save predicted landmarks as txt files. Landmarks are in voxel coordinates. Not in CNN coordinates.
     save.save_landmarks('./neuralnetwork/results/landmarks', train, names, landmarks_mean_unscale, config.landmark_unwant)
@@ -150,11 +153,11 @@ def predict(data, config, shape_model, train,
         print("Show visualisation...")
         for i in xrange(img_count):
             print("Processing visualisation {}/{}: {}".format(i+1, img_count, names[i]))
-            visual.plot_landmarks_2d('./results/landmarks_visual2D', train, names[i], images_unscale[i],
-                                     landmarks_mean_unscale[i], landmarks_gt_unscale[i])
-            visual.plot_landmarks_3d('./results/landmarks_visual3D', train, names[i], landmarks_mean[i],
+            # visual.plot_landmarks_2d('./results/landmarks_visual2D', train, names[i], images_unscale[i],
+            #                         landmarks_mean_unscale[i], landmarks_gt_unscale[i])
+            visual.plot_landmarks_3d('./neuralnetwork/results/landmarks_visual3D', train, names[i], landmarks_mean[i],
                                      landmarks_gt[i], images[i].shape)
-            visual.plot_landmarks_path('./results/landmark_path', train, names[i], landmarks_all_steps[i],
+            visual.plot_landmarks_path('./neuralnetwork/results/landmark_path', train, names[i], landmarks_all_steps[i],
                                        landmarks_gt[i], images[i].shape)
 
 
@@ -194,7 +197,7 @@ def predict_landmarks(image, config, shape_model,
 
     for j in xrange(max_test_steps):
         # find path of landmark iteratively
-        print("Step: " + str(j))
+        print("Passo: " + str(j))
         # Predict CNN outputs
         action_ind_val, yc_val, yr_val = sess.run([action_ind, yc, yr], feed_dict={x: patches, keep_prob: 1.0})
 

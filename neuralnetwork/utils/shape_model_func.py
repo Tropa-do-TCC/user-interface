@@ -16,26 +16,16 @@ def load_shape_model(shape_model_file, eigvec_per):
 
     """
     mat_contents = sio.loadmat(shape_model_file, appendmat=False)
-    #shape_model = mat_contents["ShapeData"]
     shape_model = mat_contents
-    evectors = shape_model['Evectors']
-    x_mean = shape_model['x_mean']
-    evalues = shape_model['Evalues']
-
-    print(shape_model['Evectors'])
-    print(shape_model['x_mean'])
 
     shape_model.pop("__header__")
     shape_model.pop("__globals__")
-    print(len(shape_model['Evectors']))
-    print(len(shape_model['x_mean']))
-    if (eigvec_per != 1):
+    if eigvec_per != 1:
         soma_porra = np.cumsum(shape_model['Evalues'])
         soma = np.sum(shape_model['Evalues'])
         ind_value = soma_porra > soma * eigvec_per
         ind = np.nonzero(ind_value)[0][0]
-        print("IND: " + str(ind))
-        # ind = 14
+
         shape_model['Evectors'] = shape_model['Evectors'][:, :ind + 1]
         shape_model['Evalues'] = shape_model['Evalues'][:ind + 1]
     shape_model['Evalues'] = np.squeeze(shape_model['Evalues'])

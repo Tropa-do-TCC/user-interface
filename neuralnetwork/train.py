@@ -180,7 +180,7 @@ def main():
         # Save trained model
         if ((i + 1) % config.save_interval) == 0:
             saver.save(sess, os.path.join(config.model_dir, 'model'), global_step=i + 1)
-            print("Trained model save successfully in {} at step {}".format(os.path.join(config.model_dir, 'model'),
+            print("Modelo treinado salvo com sucesso em {} na iteração {}".format(os.path.join(config.model_dir, 'model'),
                                                                             i + 1))
 
     train_writer.close()

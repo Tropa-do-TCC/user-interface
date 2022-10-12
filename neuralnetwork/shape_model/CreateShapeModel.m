@@ -18,17 +18,13 @@ function y = myScript()
     % If verbose is true all debug images will be shown.
     options.verbose=true;
 
-
     if ~exist(shapeModelFolder, 'dir')
       mkdir(shapeModelFolder)
     end
     %% Load training data
     % First Load the Landmarks Training DataSets
     fileID = fopen(shapeListFile,'r');
-    disp(shapeListFile)
     ids = textscan(fileID,'%s');
-    disp("FILES")
-    disp(ids)
     ids = ids{1};
     fclose(fileID);
 
@@ -42,8 +38,6 @@ function y = myScript()
         fid = fopen([landmarkFolder ids{i} '_ps.txt'], 'r');
         landmarks = fscanf(fid, '%f %f %f', [3 Inf]);
         landmarks = landmarks';
-        disp("landmarsk read")
-        disp(landmarks)
         fclose(fid);
 
         % Remove unwanted landmarks
@@ -52,59 +46,30 @@ function y = myScript()
     end
 
     num_landmarks = size(TrainingData(1).Vertices,1);
-    disp("numero landamrsk")
-    disp(num_landmarks)
 
     %% Shape Model %%
     % Make the Shape model, which finds the variations between contours
     % in the training data sets. And makes a PCA model describing normal
     % contours
     [ShapeData TrainingData]= MakeShapeModel(TrainingData,options.eigVecPer);
-    disp("shape model retornado")
+    disp("Shape model foi retornado")
     disp(ShapeData)
 
     % Show +-3s.d. of each mode for the top six modes
     w=1;
-    xrange=[1, imgSizeCNN(1)];
-    yrange=[1, imgSizeCNN(2)];
-    zrange=[1, imgSizeCNN(3)];
+    xrange=[-imgSizeCNN(1)/4, imgSizeCNN(1)/4];
+    yrange=[-imgSizeCNN(2)/4, imgSizeCNN(2)/4];
+    zrange=[-imgSizeCNN(3)/4, imgSizeCNN(3)/4];
+
     if(options.verbose)
-        for i=1:min(6,length(ShapeData.Evalues))
-            j=mod(i,2);
-            if(j)
-                h(w)=figure;
-                w=w+1;
-                j=1;
-            else
-                j=4;
-            end
-            subplot(2,3,j);
-            xtest = ShapeData.x_mean - ShapeData.Evectors(:,i)*sqrt(ShapeData.Evalues(i))*3;
-            disp(xtest)
-            xtest = (reshape(xtest, 3, num_landmarks))';
-            disp("reshpae0")
-            scatter3(xtest(:,1), xtest(:,2), xtest(:,3), 36, (1:size(landmarks,1))', 'x');
-            axis equal; xlabel('x'); ylabel('y'); zlabel('z');
-            xlim(xrange); ylim(yrange); zlim(zrange);
-            title(['b' num2str(i) '-3*sqrt(lambda' num2str(i) ')']);
-            subplot(2,3,j+1);
-            xtest = (reshape(ShapeData.x_mean, 3, num_landmarks))';
-            scatter3(xtest(:,1), xtest(:,2), xtest(:,3), 36, (1:size(landmarks,1))', 'x');
-            axis equal; xlabel('x'); ylabel('y'); zlabel('z');
-            xlim(xrange); ylim(yrange); zlim(zrange);
-            title(['b' num2str(i)]);
-            subplot(2,3,j+2);
-            xtest = ShapeData.x_mean + ShapeData.Evectors(:,i)*sqrt(ShapeData.Evalues(i))*3;
-            xtest = (reshape(xtest, 3, num_landmarks))';
-            scatter3(xtest(:,1), xtest(:,2), xtest(:,3), 36, (1:size(landmarks,1))', 'x');
-            axis equal; xlabel('x'); ylabel('y'); zlabel('z');
-            xlim(xrange); ylim(yrange); zlim(zrange);
-            title(['b' num2str(i) '+3*sqrt(lambda' num2str(i) ')']);
-        end
+        subplot(1,1,1);
+        xtest = (reshape(ShapeData.x_mean, 3, num_landmarks))';
+        scatter3(xtest(:,1), xtest(:,2), xtest(:,3), 10);
+        axis equal; xlabel('x'); ylabel('y'); zlabel('z');
+        xlim(xrange); ylim(yrange); zlim(zrange);
+        title(['Shape Model Depois do PCA - Quantidade de CTS lidas: ' num2str(i)]);
         drawnow;
-        for i=1:w-1
-            saveas(h(i),[shapeModelFolder 'Variation' num2str(i) '.fig']);
-        end
+        saveas(gcf,[shapeModelFolder, 'VariationAfterPCA' num2str(num_ex) 'datasets.png']);
     end
 
     % Save shape model in .mat file

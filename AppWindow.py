@@ -7,6 +7,7 @@ from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from neuralnetwork import train
 from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
+from utils.landmarks_utils import get_landmarks_from_network_infer_with_list
 
 
 class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
@@ -62,7 +63,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         export_landmarks_action = QtWidgets.QAction(
             "Exportar pontos fiduciais", self)
-        export_landmarks_action.triggered.connect(self.set_landmarks_files)
+        export_landmarks_action.triggered.connect(self.train_neural_network) # TODO
         export_menu.addAction(export_landmarks_action)
 
         # Neural network menu button
@@ -72,6 +73,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             "Treinar modelo", self)
         export_landmarks_action.triggered.connect(self.train_neural_network)
         neural_network_menu.addAction(export_landmarks_action)
+
+        export_data_action = QtWidgets.QAction(
+            "Ler informações da base de dados", self)
+        export_data_action.triggered.connect(self.set_landmarks_files)
+        neural_network_menu.addAction(export_data_action)
 
     def add_vtk_widget(self):
         wrapper_group_box = QtWidgets.QGroupBox()
@@ -138,14 +144,24 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             f"Visualização do crânio: {patient_name}")
         self.vtk_handler.set_sagittal_view()
 
+    def set_skull_nifit(self, file_path):
+        # desabilitar o botao de segmentação
+        self.skull = self.vtk_handler.setup_skull_nifit(file_path)
+        self.group_box_widget.setTitle(
+            f"Visualização do crânio: {file_path}")
+        self.vtk_handler.set_sagittal_view()
+
     def set_real_landmarks(self, file_path):
         self.real_landmarks = self.vtk_handler.setup_landmarks_from_file(
             file_path)
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks()
-        self.vtk_handler.set_sagittal_view()
+        if self.skull[0] is None:
+            get_landmarks_from_network_infer_with_list()
+        else:
+            self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(self.skull[1])
+            self.vtk_handler.set_sagittal_view()
 
     def set_landmarks_files(self): read_dataset()
 
@@ -155,6 +171,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
         self.renderer.RemoveAllViewProps()
         self.renderer.Render()
+        self.vtk_handler.set_sagittal_view()
 
     def add_skull_settings_widget(self):
         skull_group_box = QtWidgets.QGroupBox("Crânio")
@@ -166,6 +183,14 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             load_callback=self.set_skull
         )
         skull_group_layout.addWidget(skull_file_selector, 1, 0, 1, 3)
+
+        skull_file_selector_nifit = self.create_file_selector(
+            label="Importar arquivo NIFTI",
+            window_title='Selecionar arquivo NIFTI',
+            name_filter='Arquivos nii.gz (*.nii.gz)',
+            load_callback=self.set_skull_nifit
+        )
+        skull_group_layout.addWidget(skull_file_selector_nifit, 2, 0, 1, 3)
 
         # skull opacity slider
         skull_opacity_slider = self.create_slider(
