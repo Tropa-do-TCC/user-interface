@@ -212,13 +212,15 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def add_segmentation_settings_widget(self):
         segmentation_group_box = QtWidgets.QGroupBox("Segmentação")
         segmentation_group_layout = QtWidgets.QGridLayout()
+
         # segmentation
-        segmentation_combobox = self.create_combobox(
-            items=["EHO", "ABC", "FFA"]
+        segmentation_algorithm_combobox = self.create_combobox(
+            items=['FFA', 'KH', 'CS', 'ABC', 'EHO']
         )
         segmentation_group_layout.addWidget(
             QtWidgets.QLabel("Algoritmo"), 0, 0)
-        segmentation_group_layout.addWidget(segmentation_combobox, 0, 1, 1, 2)
+        segmentation_group_layout.addWidget(
+            segmentation_algorithm_combobox, 0, 1, 1, 2)
 
         # segmentation entropy slider
         segmentation_entropy_slider = self.create_slider(
@@ -275,7 +277,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         landmarks_group_layout.addWidget(landmarks_file_selector, 2, 1)
 
         landmarks_group_box.setLayout(landmarks_group_layout)
-        self.grid.addWidget(landmarks_group_box, 2, 0)
+        self.grid.addWidget(landmarks_group_box, 2, 0, 1, 2)
 
     def add_views_widget(self):
         views_box = QtWidgets.QGroupBox("Visualização")
