@@ -151,12 +151,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         if 'nii.gz' in path:
             self.skull = self.vtk_handler.setup_skull_nifit(path)
         else:
-            self.skull = self.vtk_handler.setup_skull_dicom(
-                path,
-                self.entropy_slider_value,
-                self.segmentation_alg_combobox_value,
-                self.dimension_slider_value
-            )
+            self.skull = self.vtk_handler.setup_skull_dicom(path)
 
         self.group_box_widget.setTitle(
             f"Visualização do crânio: {self.skull.patient_name}")
@@ -172,7 +167,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             get_landmarks_from_network_infer_with_list()
         else:
             self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
-                self.skull[1])
+                self.skull.nifti_path)
             self.vtk_handler.set_sagittal_view()
 
     def set_landmarks_files(self): read_dataset()
@@ -180,6 +175,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def train_neural_network(self): train.main()
 
     def clean_view(self):
+        self.skull = None
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
         self.renderer.RemoveAllViewProps()
         self.renderer.Render()
@@ -249,7 +245,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         segmentation_group_layout.addWidget(
             segmentation_entropy_slider, 1, 1, 1, 2)
 
-        # segmentation entropy slider
+        # segmentation dimension slider
         segmentation_dimension_slider = self.create_slider(
             min_value=1,
             max_value=5,
@@ -263,6 +259,17 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         segmentation_group_layout.addWidget(
             segmentation_dimension_slider, 2, 1, 1, 2)
 
+        # segmentate button
+        segmentate_button = QtWidgets.QPushButton("Segmentar")
+        segmentate_button.clicked.connect(lambda _: self.vtk_handler.setup_segmented_skull(
+            entropy=self.entropy_slider_value,
+            bioinspired=self.segmentation_alg_combobox_value,
+            dimension=self.dimension_slider_value
+        ))
+
+        segmentation_group_layout.addWidget(segmentate_button, 3, 0, 1, 3)
+
+        # add to grid
         segmentation_group_box.setLayout(segmentation_group_layout)
         self.grid.addWidget(segmentation_group_box, 1, 0, 1, 2)
 

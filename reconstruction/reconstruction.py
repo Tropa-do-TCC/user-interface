@@ -2,6 +2,7 @@ import math
 import os
 
 import vtk
+from segmentation.segmentation import segmentate
 from utils.conversion_utils import get_nifti_from_dicomdir
 from utils.dicom_utils import get_patient_name
 from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
@@ -9,13 +10,13 @@ from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    load_landmarks_from_file)
 
 
-# from segmentation.segmentation import segmentate
 class VtkVolume:
     def __init__(self):
         self.reader = None
         self.property = None
         self.patient_name = ''
         self.nifti_path = ''
+        self.dicom_dir = ''
 
 
 class VtkHandler:
@@ -198,10 +199,8 @@ class VtkHandler:
 
         return self._real_landmarks
 
-    def setup_skull_dicom(self, dicom_dir_path, entropy, bioinspired, dimension):
-        # dicom_dir_path = segmentate(
-        #     dicom_dir_path, bioinspired, dimension, entropy)
-
+    def setup_skull_dicom(self, dicom_dir_path):
+        self._renderer.Clear()
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
         patient_name = get_patient_name(dicom_dir_path)
 
@@ -230,3 +229,9 @@ class VtkHandler:
         self._renderer.AddActor(actor)
 
         return self._skull
+
+    def setup_segmented_skull(self, entropy, bioinspired, dimension):
+        self._skull.dicom_dir = segmentate(
+            self._skull.dicom_dir, bioinspired, dimension, entropy)
+
+        self.setup_skull_dicom(self._skull.dicom_dir)
