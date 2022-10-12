@@ -131,6 +131,6 @@ dmypy.json
 .pyre/
 
 # custom
-dicom_dir
+dicom_dir*
 landmarks.json
 *.nii.gz
