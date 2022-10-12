@@ -63,7 +63,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         export_landmarks_action = QtWidgets.QAction(
             "Exportar pontos fiduciais", self)
-        export_landmarks_action.triggered.connect(self.train_neural_network) # TODO
+        export_landmarks_action.triggered.connect(
+            self.train_neural_network)  # TODO
         export_menu.addAction(export_landmarks_action)
 
         # Neural network menu button
@@ -160,7 +161,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         if self.skull[0] is None:
             get_landmarks_from_network_infer_with_list()
         else:
-            self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(self.skull[1])
+            self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
+                self.skull[1])
             self.vtk_handler.set_sagittal_view()
 
     def set_landmarks_files(self): read_dataset()
@@ -216,7 +218,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
         segmentation_group_layout.addWidget(
             QtWidgets.QLabel("Algoritmo"), 0, 0)
-        segmentation_group_layout.addWidget(segmentation_combobox, 0, 1)
+        segmentation_group_layout.addWidget(segmentation_combobox, 0, 1, 1, 2)
 
         # segmentation entropy slider
         segmentation_entropy_slider = self.create_slider(
@@ -313,7 +315,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         return separator
 
     def create_slider(self, min_value, max_value, initial_value, change_callback):
-        print("initial value ", initial_value * 100)
         slider = QtWidgets.QSlider(Qt.Qt.Horizontal)
 
         slider.setMinimum(min_value * 100)
