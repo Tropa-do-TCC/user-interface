@@ -38,7 +38,7 @@ if(true)
     scatter3(array_points(:,1), array_points(:,2), array_points(:,3), 10);
     axis equal; xlabel('x'); ylabel('y'); zlabel('z');
     xlim(xrange); ylim(yrange); zlim(zrange);
-    title(['Shape Model Antes do PCA - Número de CTS lidas: ' num2str(i)]);
+    title(['Shape Model Antes do PCA - Quantidade de CTS lidas: ' num2str(i)]);
     drawnow;
     saveas(gcf,['./shape_model/' 'VariationBeforePCA' num2str(s) 'datasets.png']);
 end

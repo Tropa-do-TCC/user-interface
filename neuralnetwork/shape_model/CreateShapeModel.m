@@ -67,7 +67,7 @@ function y = myScript()
         scatter3(xtest(:,1), xtest(:,2), xtest(:,3), 10);
         axis equal; xlabel('x'); ylabel('y'); zlabel('z');
         xlim(xrange); ylim(yrange); zlim(zrange);
-        title(['Shape Model Depois do PCA' num2str(i)]);
+        title(['Shape Model Depois do PCA - Quantidade de CTS lidas: ' num2str(i)]);
         drawnow;
         saveas(gcf,[shapeModelFolder, 'VariationAfterPCA' num2str(num_ex) 'datasets.png']);
     end
