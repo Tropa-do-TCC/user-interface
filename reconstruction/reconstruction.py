@@ -8,7 +8,7 @@ from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    get_landmarks_from_network_infer,
                                    load_landmarks_from_file)
 
-import segmentation
+from segmentation import segmentation
 
 class VtkVolume:
     def __init__(self):
