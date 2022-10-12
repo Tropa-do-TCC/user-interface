@@ -31,11 +31,12 @@ def main(image_folder, algorithm, dimension, q):
 
         dicomHandler.save_dicom(dicom_image, pixel_array,f'{output_dir}/{file}')
 
+    return output_dir
 
-if __name__ == '__main__':
-    image = "../../Database/2EFVJVCN"
-    algorithm = 'FFA'
-    dimension = 2
-    q = 1
-
-    main(image, algorithm, dimension, q)
+#if __name__ == '__main__':
+#    image = "../../Database/2EFVJVCN"
+#    algorithm = 'FFA'
+#    dimension = 2
+#    q = 1
+#
+#    main(image, algorithm, dimension, q)
