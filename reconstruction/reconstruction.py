@@ -2,15 +2,11 @@ import math
 import os
 
 import vtk
-from segmentation.default_parameters import (DEFAULT_SEGMENTATION_ALG,
-                                             DEFAULT_SEGMENTATION_DIMENSION,
-                                             DEFAULT_SEGMENTATION_ENTROPY)
 from utils.conversion_utils import get_nifti_from_dicomdir
 from utils.dicom_utils import get_patient_name
 from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    get_landmarks_from_network_infer,
                                    load_landmarks_from_file)
-from segmentation import segmentation
 
 
 class VtkVolume:
@@ -19,9 +15,6 @@ class VtkVolume:
         self.property = None
         self.patient_name = ''
         self.nifti_path = ''
-        self.segmentation_alg = DEFAULT_SEGMENTATION_ALG
-        self.segmentation_q = DEFAULT_SEGMENTATION_ENTROPY
-        self.segmeentation_dimension = DEFAULT_SEGMENTATION_DIMENSION
 
 
 class VtkHandler:
@@ -208,11 +201,11 @@ class VtkHandler:
 
         return self._real_landmarks
 
-    def setup_skull_dicom(self, dicom_dir_path):
+    def setup_skull_dicom(self, dicom_dir_path, entropy, bioinspired, dimension):
+        # dicom_dir_path = segmentation.main(dicom_dir_path, 'FFA', 2, 1)
+
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
         patient_name = get_patient_name(dicom_dir_path)
-
-        #new_path = segmentation.main(dicom_dir_path, 'FFA', 2, 1)
 
         actor, reader, property = self._reconstruct_skull(nifti_file_name)
 

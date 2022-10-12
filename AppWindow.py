@@ -7,6 +7,9 @@ from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from neuralnetwork import train
 from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
+from segmentation.default_parameters import (DEFAULT_SEGMENTATION_ALG,
+                                             DEFAULT_SEGMENTATION_DIMENSION,
+                                             DEFAULT_SEGMENTATION_ENTROPY)
 from utils.landmarks_utils import get_landmarks_from_network_infer_with_list
 
 
@@ -19,8 +22,13 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler = VtkHandler(self.render_window, self.renderer)
         self.default_vtk_group_box_title = "Visualização do crânio"
 
+        # control variables
         self.skull = None
+        self.entropy_slider_value = DEFAULT_SEGMENTATION_ENTROPY
+        self.dimension_slider_value = DEFAULT_SEGMENTATION_DIMENSION
+        self.segmentation_alg_combobox_value = DEFAULT_SEGMENTATION_ALG
 
+        #  GUI components
         self.add_menu_bar()
 
         self.grid = QtWidgets.QGridLayout()
@@ -140,8 +148,15 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             load_callback(selected_file)
 
     def set_skull(self, path):
-        self.skull = self.vtk_handler.setup_skull_nifit(
-            path) if 'nii.gz' in path else self.vtk_handler.setup_skull_dicom(path)
+        if 'nii.gz' in path:
+            self.skull = self.vtk_handler.setup_skull_nifit(path)
+        else:
+            self.skull = self.vtk_handler.setup_skull_dicom(
+                path,
+                self.entropy_slider_value,
+                self.segmentation_alg_combobox_value,
+                self.dimension_slider_value
+            )
 
         self.group_box_widget.setTitle(
             f"Visualização do crânio: {self.skull.patient_name}")
@@ -224,7 +239,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         segmentation_entropy_slider = self.create_slider(
             min_value=-2,
             max_value=2,
-            initial_value=1,
+            initial_value=self.entropy_slider_value,
             change_callback=lambda value: self.change_entropy_slider_callback(
                 value)
         )
@@ -238,7 +253,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         segmentation_dimension_slider = self.create_slider(
             min_value=1,
             max_value=5,
-            initial_value=2,
+            initial_value=self.dimension_slider_value,
             change_callback=lambda value: self.change_dimension_slider_callback(
                 value)
         )
@@ -322,17 +337,17 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         slider.setMinimum(min_value * 100)
         slider.setMaximum(max_value * 100)
 
-        slider.setValue(initial_value * 100)
+        slider.setValue(int(initial_value) * 100)
 
         slider.valueChanged.connect(lambda _: change_callback(slider.value()))
 
         return slider
 
     def change_entropy_slider_callback(self, value):
-        print(value)
+        self.entropy_slider_value = value / 100
 
     def change_dimension_slider_callback(self, value):
-        print(value)
+        self.dimension_slider_value = value / 100
 
     def change_algorithm_combobox_callback(self, value):
-        print(value)
+        self.segmentation_alg_combobox_value = value
