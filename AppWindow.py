@@ -199,7 +199,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # import nifti button
         skull_file_selector_nifit = self.create_file_selector(
-            label="Importar arquivo NIFTI",
+            label="Selecionar arquivo NIFTI",
             window_title='Selecionar arquivo NIFTI',
             name_filter='Arquivos nii.gz (*.nii.gz)',
             load_callback=self.set_skull
