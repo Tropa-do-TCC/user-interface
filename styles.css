@@ -254,6 +254,10 @@ QPushButton:pressed {
     border: 2px solid rgb(43, 50, 61);
 }
 
+QPushButton:disabled {
+    background-color: rgb(24, 25, 31);
+}
+
 QLabel {
     color: white;
 }

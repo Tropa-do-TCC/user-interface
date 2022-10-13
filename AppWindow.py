@@ -150,9 +150,20 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def set_skull(self, path):
         if 'nii.gz' in path:
             self.skull = self.vtk_handler.setup_skull_nifit(path)
+            self.segmentate_button.setHidden(True)
         else:
             self.skull = self.vtk_handler.setup_skull_dicom(path)
+            self.segmentate_button.setHidden(False)
 
+        # show skull opacity slider
+        self.skull_opacity_slider_label.setHidden(False)
+        self.skull_opacity_slider.setHidden(False)
+
+        # show detect landmarks button
+        self.detect_landmarks_button.setHidden(False)
+        self.detect_landmarks_button_label.setHidden(False)
+
+        # update vtk window title
         self.group_box_widget.setTitle(
             f"Visualização do crânio: {self.skull.patient_name}")
         self.vtk_handler.set_sagittal_view()
@@ -175,8 +186,18 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def train_neural_network(self): train.main()
 
     def clean_view(self):
+        # restart variables
         self.skull = None
+
+        # update GUI components
+        self.segmentate_button.setHidden(True)
+        self.skull_opacity_slider_label.setHidden(True)
+        self.skull_opacity_slider.setHidden(True)
+        self.detect_landmarks_button.setHidden(True)
+        self.detect_landmarks_button_label.setHidden(True)
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
+
+        # update vtk view
         self.renderer.RemoveAllViewProps()
         self.renderer.Render()
         self.vtk_handler.set_sagittal_view()
@@ -203,22 +224,25 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         skull_group_layout.addWidget(skull_file_selector_nifit, 2, 0, 1, 3)
 
         # skull opacity slider
-        skull_opacity_slider = self.create_slider(
+        self.skull_opacity_slider_label = QtWidgets.QLabel("Opacidade")
+        self.skull_opacity_slider = self.create_slider(
             min_value=0,
             max_value=1,
-            initial_value=self.skull.property.GetOpacity(
-            ) if self.skull is not None else 1,
+            initial_value=1,
             change_callback=self.vtk_handler.set_skull_opacity
         )
 
-        skull_group_layout.addWidget(QtWidgets.QLabel("Opacidade"), 3, 0)
-        skull_group_layout.addWidget(skull_opacity_slider, 3, 1, 1, 2)
+        self.skull_opacity_slider_label.setHidden(True)
+        self.skull_opacity_slider.setHidden(True)
+
+        skull_group_layout.addWidget(self.skull_opacity_slider_label, 3, 0)
+        skull_group_layout.addWidget(self.skull_opacity_slider, 3, 1, 1, 2)
 
         skull_group_box.setLayout(skull_group_layout)
         self.grid.addWidget(skull_group_box, 0, 0, 1, 2)
 
     def add_segmentation_settings_widget(self):
-        segmentation_group_box = QtWidgets.QGroupBox("Segmentação")
+        self.segmentation_group_box = QtWidgets.QGroupBox("Segmentação")
         segmentation_group_layout = QtWidgets.QGridLayout()
 
         # segmentation
@@ -246,7 +270,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             segmentation_entropy_slider, 1, 1, 1, 2)
 
         # segmentation dimension slider
-        segmentation_dimension_slider = self.create_slider(
+        self.segmentation_dimension_slider = self.create_slider(
             min_value=1,
             max_value=5,
             initial_value=self.dimension_slider_value,
@@ -257,33 +281,40 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         segmentation_group_layout.addWidget(
             QtWidgets.QLabel("Dimensão"), 2, 0)
         segmentation_group_layout.addWidget(
-            segmentation_dimension_slider, 2, 1, 1, 2)
+            self.segmentation_dimension_slider, 2, 1, 1, 2)
 
         # segmentate button
-        segmentate_button = QtWidgets.QPushButton("Segmentar")
-        segmentate_button.clicked.connect(lambda _: self.vtk_handler.setup_segmented_skull(
+        self.segmentate_button = QtWidgets.QPushButton("Segmentar")
+        self.segmentate_button.clicked.connect(lambda _: self.vtk_handler.setup_segmented_skull(
             entropy=self.entropy_slider_value,
             bioinspired=self.segmentation_alg_combobox_value,
             dimension=self.dimension_slider_value
         ))
+        self.segmentate_button.setHidden(True)
 
-        segmentation_group_layout.addWidget(segmentate_button, 3, 0, 1, 3)
+        segmentation_group_layout.addWidget(self.segmentate_button, 3, 0, 1, 3)
 
         # add to grid
-        segmentation_group_box.setLayout(segmentation_group_layout)
-        self.grid.addWidget(segmentation_group_box, 1, 0, 1, 2)
+        self.segmentation_group_box.setLayout(segmentation_group_layout)
+        self.grid.addWidget(self.segmentation_group_box, 1, 0, 1, 2)
 
     def add_landmarks_settings_widget(self):
         landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais")
         landmarks_group_layout = QtWidgets.QGridLayout()
 
         # detect landmarks button
-        detect_landmarks_button = QtWidgets.QPushButton(
+        self.detect_landmarks_button_label = QtWidgets.QLabel("Automático")
+        self.detect_landmarks_button = QtWidgets.QPushButton(
             "Detectar pontos fiduciais")
-        detect_landmarks_button.clicked.connect(self.set_detected_landmarks)
+        self.detect_landmarks_button.clicked.connect(
+            self.set_detected_landmarks)
 
-        landmarks_group_layout.addWidget(QtWidgets.QLabel("Automático"), 1, 0)
-        landmarks_group_layout.addWidget(detect_landmarks_button, 1, 1)
+        self.detect_landmarks_button.setHidden(True)
+        self.detect_landmarks_button_label.setHidden(True)
+
+        landmarks_group_layout.addWidget(
+            self.detect_landmarks_button_label, 1, 0)
+        landmarks_group_layout.addWidget(self.detect_landmarks_button, 1, 1)
 
         # import landmarks button
         landmarks_file_selector = self.create_file_selector(
