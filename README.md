@@ -59,9 +59,6 @@ $ pip3 install -r requirements.txt
 
 # After that, download the dataset in "dataset" folder:
 
-# When the download finish, run the command to parse data informations:
-$ python3 utils.read_landmarks_from_database.<>
-
 # Then, start the application
 $ python3 main
 
