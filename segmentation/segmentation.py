@@ -3,6 +3,8 @@ import time
 
 import segmentation.dicomHandler as dicomHandler
 import segmentation.wspMultithreshold as wspMultithreshold
+from morph_operations.morph_operations import apply_closing
+from morph_operations.filtters_operation import gaussian_filter
 
 
 def segmentate(image_folder, algorithm, dimension, q):
@@ -16,6 +18,10 @@ def segmentate(image_folder, algorithm, dimension, q):
 
         dicom_image, pixel_array = dicomHandler.read_dicom_image(dcm_path)
 
+        # Filter
+        pixel_array = gaussian_filter(pixel_array)
+
+        # Segmentation
         hu_image = dicomHandler.transform_to_hu(dicom_image, pixel_array)
 
         hist, bin_edges, best_thresholds, img_thres = wspMultithreshold.wspMultithreshold(
@@ -26,9 +32,12 @@ def segmentate(image_folder, algorithm, dimension, q):
         pixel_array = dicomHandler.transform_to_pixel_array(
             dicom_image, high_intensity)
 
+        # operacao morfologica
+        pixel_array = apply_closing(pixel_array)
+
         #hard_tissue = wspMultithreshold.get_largest_region(pixel_array)
 
-        dicomHandler.save_dicom(
-            dicom_image, pixel_array, f'{output_dir}/{file}')
+        #dicomHandler.save_dicom(
+        #    dicom_image, pixel_array, f'{output_dir}/{file}')
 
     return output_dir
