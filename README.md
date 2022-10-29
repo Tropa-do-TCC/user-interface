@@ -43,6 +43,8 @@
 ## 💻 About The Project
 It consists of a 
 
+Yuanwei Li
+
 <!-- HOW TO RUN -->
 ## 🚀 How To Run
 
@@ -63,6 +65,7 @@ $ pip3 install -r requirements.txt
 $ python3 main
 
 ```
+
 
 
 ## 🤖 Authors
