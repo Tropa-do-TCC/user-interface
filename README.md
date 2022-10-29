@@ -14,7 +14,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/Tropa-do-TCC/user-interface">
-    <img src="https://cdna.artstation.com/p/assets/images/images/023/520/704/large/grzegorz-korniluk-czasz.jpg?1579485833" alt="Logo" width="550">
+    <img src="https://github.com/Tropa-do-TCC/user-interface/blob/main/images/skull_with_landmarks.png" alt="Logo" width="550">
   </a>
 </p>
 
