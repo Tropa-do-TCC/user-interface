@@ -32,9 +32,9 @@ class Config(object):
     test_list_file = './neuralnetwork/data/list_test.txt'
     model_dir = './neuralnetwork/cnn_model'
     # Shape model parameters
-    shape_model_file = './neuralnetwork/shape_model/shape_model/ShapeModel07-09_76datasets.mat'
+    shape_model_file = './neuralnetwork/shape_model/shape_model/ShapeModel23-10_50datasets-augmentation.mat'
     eigvec_per = 0.995      # Percentage of eigenvectors to keep
-    sd = 3.0                # Standard deviation of shape parameters
+    sd = 1.0                # Standard deviation of shape parameters
     
     landmark_count = 9     # Number of landmarks
     landmark_unwant = []     # list of unwanted landmark indices

@@ -58,3 +58,4 @@ zipp~=3.4.0
 SimpleItk
 pydicom
 scikit-image
+opencv-python

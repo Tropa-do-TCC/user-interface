@@ -187,40 +187,10 @@ def cnn(x, num_output_c, num_output_r):
                            pool_strides=[1, 2, 2, 1],
                            pool_padding='VALID')
 
-    # Fourth convolution block
-    conv4_1 = conv_act_layer(layer_name='conv4_1',
-                             input_tensor=pool3,
-                             input_dim=128,
-                             output_dim=256,
-                             conv_kernel=[3, 3],
-                             conv_strides=[1, 1],
-                             conv_padding='VALID',
-                             act=tf.nn.relu)
-    pool4 = max_pool_layer(layer_name='pool4',
-                           input_tensor=conv4_1,
-                           pool_kernel=[1, 2, 2, 1],
-                           pool_strides=[1, 2, 2, 1],
-                           pool_padding='VALID')
-
-    # Fifth convolution block
-    conv5_1 = conv_act_layer(layer_name='conv5_1',
-                             input_tensor=pool4,
-                             input_dim=256,
-                             output_dim=512,
-                             conv_kernel=[3, 3],
-                             conv_strides=[1, 1],
-                             conv_padding='VALID',
-                             act=tf.nn.relu)
-    pool5 = max_pool_layer(layer_name='pool5',
-                           input_tensor=conv5_1,
-                           pool_kernel=[1, 2, 2, 1],
-                           pool_strides=[1, 2, 2, 1],
-                           pool_padding='VALID')
-
     # Reshape final convolution layer
-    pre_fc_dim = pool5.get_shape().as_list()[1:]
+    pre_fc_dim = pool3.get_shape().as_list()[1:]
     fc_input_dim = pre_fc_dim[0] * pre_fc_dim[1] * pre_fc_dim[2]
-    pool5_flat = tf.reshape(pool5, [-1, fc_input_dim])
+    pool5_flat = tf.reshape(pool3, [-1, fc_input_dim])
 
 
     ####### Classification Layers #######
@@ -247,7 +217,7 @@ def cnn(x, num_output_c, num_output_r):
     with tf.name_scope('dropout'):
         drop2_c = tf.nn.dropout(fc2_c, keep_prob)
 
-    # Classification layer
+    # Classification layer - 3
     yc = fc_act_layer(layer_name='output_c',
                       input_tensor=drop2_c,
                       input_dim=1024,
