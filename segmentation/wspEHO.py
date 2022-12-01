@@ -1,14 +1,23 @@
-import math
 import random
+import math
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 from dataclasses import dataclass, field
 
-import numpy as np
+
+from wspShannonEvaluation import wspShannonEvaluation
+from wspTsallisEvaluation import wspTsallisEvaluation
+
+
 
 
 @dataclass
 class Elephant:
     chrom: field(default_factory=lambda: [])
     cost: float = 0
+
+
 
 
 def sort_elephants(elephants, fitness, n, hist, lb, ub, objFunc, q):
@@ -24,6 +33,8 @@ def sort_elephants(elephants, fitness, n, hist, lb, ub, objFunc, q):
     return sorted_elephants, fitness
 
 
+
+
 def CalculateClanCenter(Clan, cindex, dim, numElephantInEachClan):
     ClanCenter = np.zeros(dim)
 
@@ -33,6 +44,8 @@ def CalculateClanCenter(Clan, cindex, dim, numElephantInEachClan):
     ClanCenter = (1/numElephantInEachClan)*ClanCenter
 
     return ClanCenter
+
+
 
 
 def ClearDups(NewClan, lb, ub):
@@ -49,12 +62,16 @@ def ClearDups(NewClan, lb, ub):
     return NewClan
 
 
+
+
 def FeasibleFunction(NewClan, n, dim, lb, ub):
     for i in range(n):
         NewClan[i].chrom = np.clip(NewClan[i].chrom, lb, ub)
         NewClan[i].chrom.sort()
 
     return NewClan
+
+
 
 
 def CostFunction(NewClan, hist, n, dim, lb, ub, objFunc, q):
@@ -65,9 +82,13 @@ def CostFunction(NewClan, hist, n, dim, lb, ub, objFunc, q):
     return NewClan
 
 
+
+
 def PopSort(NewClan):
     NewClan = sorted(NewClan, key=lambda x: x.cost)
     return NewClan
+
+
 
 
 def CombineClan(NewClan, n, nClan, dim):
@@ -83,6 +104,8 @@ def CombineClan(NewClan, n, nClan, dim):
         j += 1
 
     return Population
+
+
 
 
 def wspElephantHerding(n, dim, nkE, nClan, alpha, beta, maxGeneration, hist, lb, ub, objFunc, q):

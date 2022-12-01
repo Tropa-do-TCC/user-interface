@@ -3,7 +3,7 @@ import numpy as np
 
 def TsallisEntropy(hist, q):
     sum_region = np.sum(hist)
-    if sum_region > 0:
+    if sum_region != 0:
         hist = hist/sum_region
 
     S_q = 0
@@ -11,7 +11,7 @@ def TsallisEntropy(hist, q):
     sums = 0
 
     for h_i in hist:
-        if h_i > 0:
+        if h_i != 0:
             sums = sums + h_i**q
 
     S_q = (1 - sums)/(q-1)
@@ -19,8 +19,8 @@ def TsallisEntropy(hist, q):
     return S_q
 
 
-def wspTsallisEvaluation(hist, thresholds, q):
-    thresholds = np.concatenate([[0], thresholds, [255]])
+def wspTsallisEvaluation(hist, thresholds, lb, ub, q):
+    thresholds = np.concatenate([[lb], thresholds, [ub]])
 
     n = len(thresholds)
 

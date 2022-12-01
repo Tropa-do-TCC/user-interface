@@ -1,7 +1,12 @@
-import math
 import random
-
+import math
+import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+
+
+from wspShannonEvaluation import wspShannonEvaluation
+from wspTsallisEvaluation import wspTsallisEvaluation
 
 
 def dist(a, b):
@@ -29,16 +34,16 @@ def wspFirefly(n, d, gamma, alpha, beta, maxGeneration, H, lb, ub, objFunc, q):
     t = 0
     alphat = 1.0
     bests = [0]*d
-
+    
     lb = lb + 1
     ub = ub - 1
 
     # random.seed(0) # Reset the random generator
+    
+    fireflies = [] # random initial population
 
-    fireflies = []  # random initial population
-
-    for _ in range(n):  # generate firefly with d-dimensional solution
-        firefly = random.sample(range(lb, ub), d)
+    for _ in range(n): # generate firefly with d-dimensional solution
+        firefly = random.sample(range(lb,ub), d)
         firefly.sort()
         fireflies.append(firefly)
 
@@ -48,12 +53,12 @@ def wspFirefly(n, d, gamma, alpha, beta, maxGeneration, H, lb, ub, objFunc, q):
         lin = [0.0]*n
         r.append(lin)
 
-    Z = [0]*n  # Initial light intensity of each firefly
+    Z = [0]*n # Initial light intensity of each firefly
 
     while t < maxGeneration:
         for i in range(n):
             Z[i] = -objFunc(H, fireflies[i], lb, ub, q)
-
+        
         indice = np.argsort(Z)
 
         Z.sort()
@@ -71,25 +76,24 @@ def wspFirefly(n, d, gamma, alpha, beta, maxGeneration, H, lb, ub, objFunc, q):
                 r[i][j] = dist(fireflies[i], fireflies[j])
 
         alphat = alpha * alphat  # Reduce randomness as iterations proceed
-
+        
         # Move all fireflies to the better locations
         for i in range(n):
             for j in range(n):
                 if Z[i] < Z[j]:
                     threshold = random.sample(range(lb, ub), d)
                     threshold.sort()
-
+                    
                     betat = beta * math.exp(-gamma*((r[i][j])**2))
 
                     if i != n-1:
                         for k in range(d):
-                            fireflies[i][k] = int(
-                                ((1 - betat)*fireflies[i][k] + betat*fireflies[j][k] + alphat*threshold[k])/(1+alphat))
-
+                            fireflies[i][k] = int(((1 - betat)*fireflies[i][k] + betat*fireflies[j][k] + alphat*threshold[k])/(1+alphat))
+        
         bests = fireflies[0]
-
-        t += 1
+        
+        t+=1
 
     bests.sort()
-
+    
     return bests

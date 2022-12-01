@@ -1,7 +1,15 @@
-import math
-import random
 
+import random
+import math
+import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+
+
+from wspShannonEvaluation import wspShannonEvaluation
+from wspTsallisEvaluation import wspTsallisEvaluation
+
+
 
 
 def empty_nests(nest, pa, n, dim, lb, ub):
@@ -24,6 +32,8 @@ def empty_nests(nest, pa, n, dim, lb, ub):
         tempnest[j].sort()
 
     return tempnest
+
+
 
 
 def get_cuckoos(nest, best, lb, ub, n, dim):
@@ -55,6 +65,7 @@ def get_cuckoos(nest, best, lb, ub, n, dim):
     return tempnest
 
 
+
 def get_best_nest(nest, new_nest, fitness, n, dim, hist, lb, ub, objectivefunc, q):
     tempnest = np.zeros((n, dim))
     tempnest = np.copy(nest)
@@ -70,6 +81,7 @@ def get_best_nest(nest, new_nest, fitness, n, dim, hist, lb, ub, objectivefunc, 
     bestlocal = tempnest[K]
 
     return fmax, bestlocal, tempnest, fitness
+
 
 
 def wspCuckooSearch(n, dim, pa, maxGeneration, hist, lb, ub, objFunc, q):
