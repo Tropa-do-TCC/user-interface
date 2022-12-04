@@ -1,5 +1,4 @@
 import numpy as np
-import skimage
 from skimage import data, util, measure
 import pandas as pd
 from sklearn import preprocessing
@@ -7,30 +6,26 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import cv2
 
+from segmentation.wspFFA import wspFirefly
+from segmentation.wspCS import wspCuckooSearch
+from segmentation.wspKH import wspKrillHerd
+from segmentation.wspEHO import wspElephantHerding
+from segmentation.wspABC import wspArtificialBeeColony
 
-from wspFFA import wspFirefly
-from wspCS import wspCuckooSearch
-from wspKH import wspKrillHerd
-from wspEHO import wspElephantHerding
-from wspABC import wspArtificialBeeColony
-
-
-from wspShannonEvaluation import wspShannonEvaluation
-from wspTsallisEvaluation import wspTsallisEvaluation
-
-
+from segmentation.wspShannonEvaluation import wspShannonEvaluation
+from segmentation.wspTsallisEvaluation import wspTsallisEvaluation
 
 
 def wspGrayHistogram(hu_img):
     lower_bound = int(hu_img.min())
-    upper_bound = int(hu_img.max())+1
+    upper_bound = int(hu_img.max()) + 1
 
-    #hist, _ = np.histogram(hu_img,256,[0,255])
+    # hist, _ = np.histogram(hu_img,256,[0,255])
     hist, bin_edges = np.histogram(hu_img, abs(
-        lower_bound)+upper_bound, [lower_bound, upper_bound])
+        lower_bound) + upper_bound, [lower_bound, upper_bound])
     bin_edges = bin_edges[:-1]
 
-    hist = hist/np.sum(hist)
+    hist = hist / np.sum(hist)
 
     return hist, bin_edges, lower_bound, upper_bound
 
@@ -38,9 +33,9 @@ def wspGrayHistogram(hu_img):
 def apply_threshold(img, thresh, lb, ub):
     row, col = img.shape
 
-    colors = [*range(lb, ub, round(ub/len(thresh)))]
+    colors = [*range(lb, ub, round(ub / len(thresh)))]
     colors.append(ub)
-    #print(colors, thresh)
+    # print(colors, thresh)
 
     img_thres = np.zeros((row, col))
 
@@ -55,13 +50,11 @@ def apply_threshold(img, thresh, lb, ub):
                     break
 
             if color == -1:
-                color = colors[len(colors)-1]
+                color = colors[len(colors) - 1]
 
             img_thres[i, j] = color
 
     return img_thres
-
-
 
 
 def get_high_intensity_pixels(dicom_img):
@@ -73,18 +66,15 @@ def get_high_intensity_pixels(dicom_img):
     return dicom_img
 
 
-
-
 def region_stdev(region, intensities):
     return np.std(intensities[region])
 
 
-
-
 def get_included_regions(pixel_array, original_image):
     label_image = measure.label(pixel_array, background=pixel_array.min())
-    props = measure.regionprops_table(label_image, original_image, properties=['area', 'intensity_mean'], extra_properties=[region_stdev])
-    
+    props = measure.regionprops_table(label_image, original_image, properties=['area', 'intensity_mean'],
+                                      extra_properties=[region_stdev])
+
     table = pd.DataFrame(props)
 
     X_train = table.values.tolist()
@@ -94,16 +84,14 @@ def get_included_regions(pixel_array, original_image):
 
     kmeans = KMeans(n_clusters=2, random_state=0).fit(X_scaled)
     clusters = kmeans.labels_
-    
+
     return clusters[table['area'].idxmax()], clusters
-
-
 
 
 def get_largests_regions(pixel_array, original_image):
     max_value = pixel_array.max()
     min_value = pixel_array.min()
-    
+
     labels_mask = measure.label(pixel_array, background=pixel_array.min())
 
     regions = measure.regionprops(labels_mask)
@@ -112,15 +100,13 @@ def get_largests_regions(pixel_array, original_image):
         big_reg_cluster, clusters = get_included_regions(pixel_array, original_image)
         for index in range(len(regions)):
             if clusters[index] != big_reg_cluster:
-                labels_mask[regions[index].coords[:,0], regions[index].coords[:,1]] = min_value
+                labels_mask[regions[index].coords[:, 0], regions[index].coords[:, 1]] = min_value
 
     labels_mask[labels_mask == 0] = min_value
     labels_mask[labels_mask != min_value] = max_value
     mask = labels_mask
 
     return mask.astype(np.int16)
-
-
 
 
 def run_firefly(hist, lb, ub, dimension, entropy, q):
@@ -137,8 +123,6 @@ def run_firefly(hist, lb, ub, dimension, entropy, q):
     return best_thresholds
 
 
-
-
 def run_cuckoo_search(hist, lb, ub, dimension, entropy, q):
     n = 40
     d = dimension
@@ -151,8 +135,6 @@ def run_cuckoo_search(hist, lb, ub, dimension, entropy, q):
     return best_thresholds
 
 
-
-
 def run_krill_herd(hist, lb, ub, dimension, entropy, q):
     n = 40
     d = dimension
@@ -162,8 +144,6 @@ def run_krill_herd(hist, lb, ub, dimension, entropy, q):
         n, d, maxGeneration, hist, lb, ub, entropy, q)
 
     return best_thresholds
-
-
 
 
 def run_elephant_herding(hist, lb, ub, dimension, entropy, q):
@@ -181,8 +161,6 @@ def run_elephant_herding(hist, lb, ub, dimension, entropy, q):
     return best_thresholds
 
 
-
-
 def run_artificial_bee_colony(hist, lb, ub, dimension, entropy, q):
     n = 20
     d = dimension
@@ -192,8 +170,6 @@ def run_artificial_bee_colony(hist, lb, ub, dimension, entropy, q):
         n, d, maxGeneration, hist, lb, ub, entropy, q)
 
     return best_thresholds
-
-
 
 
 def switch(alg):
@@ -207,8 +183,6 @@ def switch(alg):
         return run_elephant_herding
     elif alg == 'ABC':
         return run_artificial_bee_colony
-
-
 
 
 def wspMultithreshold(hu_img, algorithm, dimension, q):

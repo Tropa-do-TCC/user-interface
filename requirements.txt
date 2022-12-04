@@ -59,3 +59,4 @@ SimpleItk
 pydicom
 scikit-image
 opencv-python
+scikit-learn

@@ -83,9 +83,6 @@ def main():
     # Evaluation on test-set
     predict(data.test, config, shape_model, False,
             sess, x, action_ind, yc, yr, keep_prob)
-    # Evaluation on train-set
-    # predict(data.train, config, shape_model, True,
-    #         sess, x, action_ind, yc, yr, keep_prob)
     sess.close()
 
 
@@ -153,8 +150,6 @@ def predict(data, config, shape_model, train,
         print("Show visualisation...")
         for i in xrange(img_count):
             print("Processing visualisation {}/{}: {}".format(i+1, img_count, names[i]))
-            # visual.plot_landmarks_2d('./results/landmarks_visual2D', train, names[i], images_unscale[i],
-            #                         landmarks_mean_unscale[i], landmarks_gt_unscale[i])
             visual.plot_landmarks_3d('./neuralnetwork/results/landmarks_visual3D', train, names[i], landmarks_mean[i],
                                      landmarks_gt[i], images[i].shape)
             visual.plot_landmarks_path('./neuralnetwork/results/landmark_path', train, names[i], landmarks_all_steps[i],

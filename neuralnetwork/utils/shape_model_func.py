@@ -21,9 +21,9 @@ def load_shape_model(shape_model_file, eigvec_per):
     shape_model.pop("__header__")
     shape_model.pop("__globals__")
     if eigvec_per != 1:
-        soma_porra = np.cumsum(shape_model['Evalues'])
-        soma = np.sum(shape_model['Evalues'])
-        ind_value = soma_porra > soma * eigvec_per
+        cumulative_sum = np.cumsum(shape_model['Evalues'])
+        sum_value = np.sum(shape_model['Evalues'])
+        ind_value = cumulative_sum > sum_value * eigvec_per
         ind = np.nonzero(ind_value)[0][0]
 
         shape_model['Evectors'] = shape_model['Evectors'][:, :ind + 1]
