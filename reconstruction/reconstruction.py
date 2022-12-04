@@ -231,8 +231,8 @@ class VtkHandler:
 
         return self._skull
 
-    def setup_segmented_skull(self, entropy, bioinspired, dimension):
+    def setup_segmented_skull(self, entropy, bioinspired, dimension, gama):
         self._skull.dicom_dir = segmentate(
-            self._skull.dicom_dir, bioinspired, dimension, entropy)
+            self._skull.dicom_dir, bioinspired, dimension, entropy, gama)
 
         self.setup_skull_dicom(self._skull.dicom_dir)

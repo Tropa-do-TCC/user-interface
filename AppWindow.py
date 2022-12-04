@@ -9,7 +9,8 @@ from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
 from segmentation.default_parameters import (DEFAULT_SEGMENTATION_ALG,
                                              DEFAULT_SEGMENTATION_DIMENSION,
-                                             DEFAULT_SEGMENTATION_ENTROPY)
+                                             DEFAULT_SEGMENTATION_ENTROPY,
+                                             DEFAULT_GAMA_DIMENSION)
 from utils.landmarks_utils import get_landmarks_from_network_infer_with_list
 
 
@@ -26,6 +27,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.skull = None
         self.entropy_slider_value = DEFAULT_SEGMENTATION_ENTROPY
         self.dimension_slider_value = DEFAULT_SEGMENTATION_DIMENSION
+        self.gama_slider_value = DEFAULT_GAMA_DIMENSION
         self.segmentation_alg_combobox_value = DEFAULT_SEGMENTATION_ALG
 
         #  GUI components
@@ -283,16 +285,31 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         segmentation_group_layout.addWidget(
             self.segmentation_dimension_slider, 2, 1, 1, 2)
 
+        # segmentation gama slider
+        self.segmentation_gama_slider = self.create_slider(
+            min_value=1,
+            max_value=2,
+            initial_value=self.gama_slider_value,
+            change_callback=lambda value: self.change_gama_slider_callback(
+                value)
+        )
+
+        segmentation_group_layout.addWidget(
+            QtWidgets.QLabel("Gama"), 3, 0)
+        segmentation_group_layout.addWidget(
+            self.segmentation_gama_slider, 3, 1, 1, 2)
+
         # segmentate button
         self.segmentate_button = QtWidgets.QPushButton("Segmentar")
         self.segmentate_button.clicked.connect(lambda _: self.vtk_handler.setup_segmented_skull(
             entropy=self.entropy_slider_value,
             bioinspired=self.segmentation_alg_combobox_value,
-            dimension=self.dimension_slider_value
+            dimension=self.dimension_slider_value,
+            gama=self.gama_slider_value
         ))
         self.segmentate_button.setHidden(True)
 
-        segmentation_group_layout.addWidget(self.segmentate_button, 3, 0, 1, 3)
+        segmentation_group_layout.addWidget(self.segmentate_button, 4, 0, 1, 3)
 
         # add to grid
         self.segmentation_group_box.setLayout(segmentation_group_layout)
@@ -386,6 +403,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
     def change_dimension_slider_callback(self, value):
         self.dimension_slider_value = value / 100
+
+    def change_gama_slider_callback(self, value):
+        self.gama_slider_value = value / 100
 
     def change_algorithm_combobox_callback(self, value):
         self.segmentation_alg_combobox_value = value
