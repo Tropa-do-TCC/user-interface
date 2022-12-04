@@ -10,7 +10,7 @@ from reconstruction.reconstruction import VtkHandler
 from segmentation.default_parameters import (DEFAULT_SEGMENTATION_ALG,
                                              DEFAULT_SEGMENTATION_DIMENSION,
                                              DEFAULT_SEGMENTATION_ENTROPY,
-                                             DEFAULT_GAMA_DIMENSION)
+                                             DEFAULT_SEGMENTATION_GAMA)
 from utils.landmarks_utils import get_landmarks_from_network_infer_with_list
 
 
@@ -27,7 +27,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.skull = None
         self.entropy_slider_value = DEFAULT_SEGMENTATION_ENTROPY
         self.dimension_slider_value = DEFAULT_SEGMENTATION_DIMENSION
-        self.gama_slider_value = DEFAULT_GAMA_DIMENSION
+        self.gama_slider_value = DEFAULT_SEGMENTATION_GAMA
         self.segmentation_alg_combobox_value = DEFAULT_SEGMENTATION_ALG
 
         #  GUI components
