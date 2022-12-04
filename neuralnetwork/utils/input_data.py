@@ -129,11 +129,14 @@ def extract_all_image_and_label(file_list,
         # load image
         img, pix_dim[i] = extract_image(os.path.join(data_dir, filename + '.nii.gz'))
         # load landmarks and remove unwanted ones. Labels already in voxel coordinate
-        label = extract_label(os.path.join(label_dir, filename + '_ps.txt'))
-        label = select_label(label, landmark_unwant)
+        try:
+            label = extract_label(os.path.join(label_dir, filename + '_ps.txt'))
+            label = select_label(label, landmark_unwant)
+            labels[i, :, :] = label
+        except Exception as e:
+            print("Arquivo de lancdmarks n existe")
         # Store extracted data
         images.append(np.expand_dims(img, axis=3))
-        labels[i, :, :] = label
     # Compute shape parameters
     shape_params = None
     if shape_model is not None:

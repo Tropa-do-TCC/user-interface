@@ -75,9 +75,12 @@ def made_a_test_infer_landmarks_and_reconstruct_with_one_skull(skull_name):
 
     # STEP 3: Crate test file with selected skull and made the test
     infer.main()
-
+    original_landmarks = []
     # STEP 4: Reconstruction with predict landmarks
-    original_landmarks = read_predict_landmarks("./neuralnetwork/data/landmarks_from_ct/" + skull_name + "_ps.txt")
+    try:
+        original_landmarks = read_predict_landmarks("./neuralnetwork/data/landmarks_from_ct/" + skull_name + "_ps.txt")
+    except Exception as e:
+        print("Não ha landmarsks originais")
     predict_landmarks = read_predict_landmarks("./neuralnetwork/results/landmarks/test/" + skull_name + "_ps.txt")
     print(original_landmarks)
     print(predict_landmarks)
