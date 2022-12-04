@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-from wspShannonEvaluation import wspShannonEvaluation
-from wspTsallisEvaluation import wspTsallisEvaluation
+from segmentation.wspShannonEvaluation import wspShannonEvaluation
+from segmentation.wspTsallisEvaluation import wspTsallisEvaluation
 
 
 def dist(a, b):

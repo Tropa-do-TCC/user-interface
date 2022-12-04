@@ -6,8 +6,8 @@ import numpy as np
 from dataclasses import dataclass, field
 
 
-from wspShannonEvaluation import wspShannonEvaluation
-from wspTsallisEvaluation import wspTsallisEvaluation
+from segmentation.wspShannonEvaluation import wspShannonEvaluation
+from segmentation.wspTsallisEvaluation import wspTsallisEvaluation
 
 
 @dataclass

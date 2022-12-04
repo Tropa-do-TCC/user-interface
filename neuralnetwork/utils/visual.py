@@ -8,8 +8,6 @@ from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
 from plotly.matplotlylib.mplexporter._py3k_compat import xrange
 
-from neuralnetwork.utils import plane
-
 
 def plot_landmarks_3d(save_dir, train, name, landmarks_mean, landmarks_gt, dim):
     """Plot predicted landmarks in 3D space
