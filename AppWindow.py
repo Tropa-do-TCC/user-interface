@@ -1,4 +1,5 @@
 
+from threading import Thread
 import PyQt5.QtCore as Qt
 import PyQt5.QtWidgets as QtWidgets
 import vtk
@@ -30,9 +31,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         #  GUI components
         self.add_menu_bar()
-
-        self.grid = QtWidgets.QGridLayout()
-
         self.add_vtk_widget()
         self.add_skull_settings_widget()
         self.add_segmentation_settings_widget()
@@ -40,11 +38,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.add_views_widget()
 
         self.render_window.Render()
-        self.setWindowTitle("Detecção de pontos fiduciais cefalométricos")
+        self.setWindowTitle("Uma metodologia para reconstrução 3D de imagens médicas baseada em algoritmos bio-inspirados e aprendizagem profunda")
         self.frame.setLayout(self.grid)
         self.setCentralWidget(self.frame)
         self.interactor.Initialize()
-        self.show()
+        self.showMaximized()
 
     @staticmethod
     def setup():
@@ -175,11 +173,22 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
     def set_detected_landmarks(self):
         if self.skull is None:
-            get_landmarks_from_network_infer_with_list()
+            print("Nao há cts selecionadas")
         else:
-            self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
+            thread = Thread(target=self.predict_landm)
+            thread.start()
+            # update vtk window title
+            self.group_box_widget.setTitle(
+            f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Detectando pontos fiduciais...")
+            
+
+    def predict_landm(self):
+        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
                 self.skull.nifti_path)
-            self.vtk_handler.set_sagittal_view()
+        self.vtk_handler.set_sagittal_view()
+        # update vtk window title
+        self.group_box_widget.setTitle(
+        f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Pontos fiduciais detectados!!")
 
     def set_landmarks_files(self): read_dataset()
 
@@ -299,7 +308,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.grid.addWidget(self.segmentation_group_box, 1, 0, 1, 2)
 
     def add_landmarks_settings_widget(self):
-        landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais")
+        landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais Cefalométricos")
         landmarks_group_layout = QtWidgets.QGridLayout()
 
         # detect landmarks button
@@ -309,8 +318,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.detect_landmarks_button.clicked.connect(
             self.set_detected_landmarks)
 
-        self.detect_landmarks_button.setHidden(True)
-        self.detect_landmarks_button_label.setHidden(True)
+        self.detect_landmarks_button.setHidden(False)
+        self.detect_landmarks_button_label.setHidden(False)
 
         landmarks_group_layout.addWidget(
             self.detect_landmarks_button_label, 1, 0)
