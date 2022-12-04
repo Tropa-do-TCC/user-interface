@@ -31,6 +31,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         #  GUI components
         self.add_menu_bar()
+        self.grid = QtWidgets.QGridLayout()
         self.add_vtk_widget()
         self.add_skull_settings_widget()
         self.add_segmentation_settings_widget()
@@ -318,8 +319,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.detect_landmarks_button.clicked.connect(
             self.set_detected_landmarks)
 
-        self.detect_landmarks_button.setHidden(False)
-        self.detect_landmarks_button_label.setHidden(False)
+        self.detect_landmarks_button.setHidden(True)
+        self.detect_landmarks_button_label.setHidden(True)
 
         landmarks_group_layout.addWidget(
             self.detect_landmarks_button_label, 1, 0)
