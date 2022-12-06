@@ -9,9 +9,9 @@ from neuralnetwork import train
 from neuralnetwork.execute_neural_network import read_dataset
 from reconstruction.reconstruction import VtkHandler
 from segmentation.default_parameters import (DEFAULT_SEGMENTATION_ALG,
-                                             DEFAULT_SEGMENTATION_DIMENSION,
-                                             DEFAULT_SEGMENTATION_ENTROPY,
-                                             DEFAULT_SEGMENTATION_GAMA)
+                                             DEFAULT_SEGMENTATION_DIMENSION, DEFAULT_SEGMENTATION_DIMENSION_LABEL,
+                                             DEFAULT_SEGMENTATION_ENTROPY, DEFAULT_SEGMENTATION_ENTROPY_LABEL,
+                                             DEFAULT_SEGMENTATION_GAMA, DEFAULT_SEGMENTATION_GAMA_LABEL)
 from utils.landmarks_utils import get_landmarks_from_network_infer_with_list
 
 
@@ -41,7 +41,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.add_views_widget()
 
         self.render_window.Render()
-        self.setWindowTitle("Uma metodologia para reconstrução 3D de imagens médicas baseada em algoritmos bio-inspirados e aprendizagem profunda")
+        self.setWindowTitle(
+            "Uma metodologia para reconstrução 3D de imagens médicas baseada em algoritmos bio-inspirados e aprendizagem profunda")
         self.frame.setLayout(self.grid)
         self.setCentralWidget(self.frame)
         self.interactor.Initialize()
@@ -182,16 +183,15 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             thread.start()
             # update vtk window title
             self.group_box_widget.setTitle(
-            f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Detectando pontos fiduciais...")
-            
+                f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Detectando pontos fiduciais...")
 
     def predict_landm(self):
         self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
-                self.skull.nifti_path)
+            self.skull.nifti_path)
         self.vtk_handler.set_sagittal_view()
         # update vtk window title
         self.group_box_widget.setTitle(
-        f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Pontos fiduciais detectados!!")
+            f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Pontos fiduciais detectados!!")
 
     def set_landmarks_files(self): read_dataset()
 
@@ -208,6 +208,15 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.detect_landmarks_button.setHidden(True)
         self.detect_landmarks_button_label.setHidden(True)
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
+
+        # reset segmentation labels
+        self.segmentation_entropy_label.setText(
+            DEFAULT_SEGMENTATION_ENTROPY_LABEL)
+
+        self.segmentation_dimension_label.setText(
+            DEFAULT_SEGMENTATION_DIMENSION_LABEL)
+
+        self.segmentation_gama_label.setText(DEFAULT_SEGMENTATION_GAMA_LABEL)
 
         # update vtk view
         self.renderer.RemoveAllViewProps()
@@ -276,8 +285,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
                 value)
         )
 
+        self.segmentation_entropy_label = QtWidgets.QLabel(
+            DEFAULT_SEGMENTATION_ENTROPY_LABEL)
+
         segmentation_group_layout.addWidget(
-            QtWidgets.QLabel("Entropia (q)"), 1, 0)
+            self.segmentation_entropy_label, 1, 0)
         segmentation_group_layout.addWidget(
             segmentation_entropy_slider, 1, 1, 1, 2)
 
@@ -290,8 +302,11 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
                 value)
         )
 
+        self.segmentation_dimension_label = QtWidgets.QLabel(
+            DEFAULT_SEGMENTATION_DIMENSION_LABEL)
+
         segmentation_group_layout.addWidget(
-            QtWidgets.QLabel("Dimensão"), 2, 0)
+            self.segmentation_dimension_label, 2, 0)
         segmentation_group_layout.addWidget(
             self.segmentation_dimension_slider, 2, 1, 1, 2)
 
@@ -303,9 +318,10 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             change_callback=lambda value: self.change_gama_slider_callback(
                 value)
         )
+        self.segmentation_gama_label = QtWidgets.QLabel(
+            DEFAULT_SEGMENTATION_GAMA_LABEL)
 
-        segmentation_group_layout.addWidget(
-            QtWidgets.QLabel("Gama"), 3, 0)
+        segmentation_group_layout.addWidget(self.segmentation_gama_label, 3, 0)
         segmentation_group_layout.addWidget(
             self.segmentation_gama_slider, 3, 1, 1, 2)
 
@@ -326,7 +342,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.grid.addWidget(self.segmentation_group_box, 1, 0, 1, 2)
 
     def add_landmarks_settings_widget(self):
-        landmarks_group_box = QtWidgets.QGroupBox("Pontos Fiduciais Cefalométricos")
+        landmarks_group_box = QtWidgets.QGroupBox(
+            "Pontos Fiduciais Cefalométricos")
         landmarks_group_layout = QtWidgets.QGridLayout()
 
         # detect landmarks button
@@ -410,12 +427,18 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
     def change_entropy_slider_callback(self, value):
         self.entropy_slider_value = value / 100
+        self.segmentation_entropy_label.setText(
+            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} - {str(round(self.entropy_slider_value, 2))}")
 
     def change_dimension_slider_callback(self, value):
         self.dimension_slider_value = value / 100
+        self.segmentation_dimension_label.setText(
+            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} - {str(round(self.dimension_slider_value, 2))}")
 
     def change_gama_slider_callback(self, value):
         self.gama_slider_value = value / 100
+        self.segmentation_gama_label.setText(
+            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} - {str(round(self.gama_slider_value, 2))}")
 
     def change_algorithm_combobox_callback(self, value):
         self.segmentation_alg_combobox_value = value
