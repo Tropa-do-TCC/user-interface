@@ -254,9 +254,8 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         # skull opacity slider
         self.skull_opacity_slider_label = QtWidgets.QLabel("Opacidade")
         self.skull_opacity_slider = self.create_slider(
-            min_value=0,
-            max_value=1,
-            initial_value=1,
+            values=range(0, 101),
+            initial_value=100,
             change_callback=self.vtk_handler.set_skull_opacity
         )
 
@@ -285,15 +284,14 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # segmentation entropy slider
         segmentation_entropy_slider = self.create_slider(
-            min_value=-2,
-            max_value=2,
+            values=[-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2],
             initial_value=self.entropy_slider_value,
             change_callback=lambda value: self.change_entropy_slider_callback(
                 value)
         )
 
         self.segmentation_entropy_label = QtWidgets.QLabel(
-            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {self.entropy_slider_value}")
+            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} -> {self.entropy_slider_value}")
 
         segmentation_group_layout.addWidget(
             self.segmentation_entropy_label, 1, 0)
@@ -302,8 +300,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # segmentation dimension slider
         self.segmentation_dimension_slider = self.create_slider(
-            min_value=1,
-            max_value=5,
+            values=range(1, 6),
             initial_value=self.dimension_slider_value,
             change_callback=lambda value: self.change_dimension_slider_callback(
                 value)
@@ -319,8 +316,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # segmentation gama slider
         self.segmentation_gama_slider = self.create_slider(
-            min_value=1,
-            max_value=2,
+            values=[1, 1.3, 1.5, 1.7],
             initial_value=self.gama_slider_value,
             change_callback=lambda value: self.change_gama_slider_callback(
                 value)
@@ -420,32 +416,34 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         return separator
 
-    def create_slider(self, min_value, max_value, initial_value, change_callback):
+    def create_slider(self, values, initial_value, change_callback):
         slider = QtWidgets.QSlider(Qt.Qt.Horizontal)
 
-        slider.setMinimum(min_value * 100)
-        slider.setMaximum(max_value * 100)
+        slider.values = values
+        slider.setRange(0, len(values) - 1)
+        slider.setTickInterval(1)
 
-        slider.setValue(int(initial_value) * 100)
+        slider.setValue(int(initial_value))
 
-        slider.valueChanged.connect(lambda _: change_callback(slider.value()))
+        slider.valueChanged.connect(
+            lambda index: change_callback(values[index]))
 
         return slider
 
     def change_entropy_slider_callback(self, value):
-        self.entropy_slider_value = value / 100
+        self.entropy_slider_value = value
         self.segmentation_entropy_label.setText(
-            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} -> {str(round(self.entropy_slider_value, 2))}")
+            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} -> {self.entropy_slider_value}")
 
     def change_dimension_slider_callback(self, value):
-        self.dimension_slider_value = value / 100
+        self.dimension_slider_value = value
         self.segmentation_dimension_label.setText(
-            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {str(round(self.dimension_slider_value, 2))}")
+            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {self.dimension_slider_value}")
 
     def change_gama_slider_callback(self, value):
-        self.gama_slider_value = value / 100
+        self.gama_slider_value = value
         self.segmentation_gama_label.setText(
-            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} -> {str(round(self.gama_slider_value, 2))}")
+            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} -> {self.gama_slider_value}")
 
     def change_algorithm_combobox_callback(self, value):
         self.segmentation_alg_combobox_value = value
