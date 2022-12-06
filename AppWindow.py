@@ -210,13 +210,20 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.group_box_widget.setTitle(self.default_vtk_group_box_title)
 
         # reset segmentation labels
+        self.entropy_slider_value = DEFAULT_SEGMENTATION_DIMENSION
         self.segmentation_entropy_label.setText(
-            DEFAULT_SEGMENTATION_ENTROPY_LABEL)
+            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} -> {self.entropy_slider_value}"
+        )
 
+        self.dimension_slider_value = DEFAULT_SEGMENTATION_DIMENSION
         self.segmentation_dimension_label.setText(
-            DEFAULT_SEGMENTATION_DIMENSION_LABEL)
+            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {self.dimension_slider_value}"
+        )
 
-        self.segmentation_gama_label.setText(DEFAULT_SEGMENTATION_GAMA_LABEL)
+        self.gama_slider_value = DEFAULT_SEGMENTATION_GAMA
+        self.segmentation_gama_label.setText(
+            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} -> {self.gama_slider_value}"
+        )
 
         # update vtk view
         self.renderer.RemoveAllViewProps()
@@ -286,7 +293,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
 
         self.segmentation_entropy_label = QtWidgets.QLabel(
-            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} - {self.entropy_slider_value}")
+            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {self.entropy_slider_value}")
 
         segmentation_group_layout.addWidget(
             self.segmentation_entropy_label, 1, 0)
@@ -303,7 +310,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
 
         self.segmentation_dimension_label = QtWidgets.QLabel(
-            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} - {self.dimension_slider_value}")
+            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {self.dimension_slider_value}")
 
         segmentation_group_layout.addWidget(
             self.segmentation_dimension_label, 2, 0)
@@ -319,7 +326,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
                 value)
         )
         self.segmentation_gama_label = QtWidgets.QLabel(
-            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} - {self.gama_slider_value}")
+            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} -> {self.gama_slider_value}")
 
         segmentation_group_layout.addWidget(self.segmentation_gama_label, 3, 0)
         segmentation_group_layout.addWidget(
@@ -428,17 +435,17 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def change_entropy_slider_callback(self, value):
         self.entropy_slider_value = value / 100
         self.segmentation_entropy_label.setText(
-            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} - {str(round(self.entropy_slider_value, 2))}")
+            f"{DEFAULT_SEGMENTATION_ENTROPY_LABEL} -> {str(round(self.entropy_slider_value, 2))}")
 
     def change_dimension_slider_callback(self, value):
         self.dimension_slider_value = value / 100
         self.segmentation_dimension_label.setText(
-            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} - {str(round(self.dimension_slider_value, 2))}")
+            f"{DEFAULT_SEGMENTATION_DIMENSION_LABEL} -> {str(round(self.dimension_slider_value, 2))}")
 
     def change_gama_slider_callback(self, value):
         self.gama_slider_value = value / 100
         self.segmentation_gama_label.setText(
-            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} - {str(round(self.gama_slider_value, 2))}")
+            f"{DEFAULT_SEGMENTATION_GAMA_LABEL} -> {str(round(self.gama_slider_value, 2))}")
 
     def change_algorithm_combobox_callback(self, value):
         self.segmentation_alg_combobox_value = value
