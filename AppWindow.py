@@ -125,7 +125,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # update vtk window title
         self.vtk_widget.set_vtk_window_title(
-            f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Pontos fiduciais detectados!")
+            f"Visualização do crânio: {self.vtk_handler.get_skull_volume_data().patient_name} \t\t\t\t\t\t Pontos fiduciais detectados!")
 
     def clean_view(self):
         # reset segmentation labels
