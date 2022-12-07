@@ -48,7 +48,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
 
         self.skull_settings_widget = SkullSettingsWidget(
-            import_skull_callback=self.set_skull,
+            import_skull_callback=self.reconstruct_skull,
             vtk_handler=self.vtk_handler,
             parent_grid=self.grid
         )
@@ -80,7 +80,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             lambda _: None)
         export_menu.addAction(export_landmarks_action)
 
-    def set_skull(self, path: str):
+    def setup_skull(self, path: str):
         canSegmentateSkull = path.endswith("nii.gz")
         if canSegmentateSkull:
             self.vtk_handler.setup_skull_from_nifti_file(path)
@@ -111,15 +111,15 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        thread = Thread(target=self.predict_landm)
+        thread = Thread(target=self.detected_landmarks)
         thread.start()
         # update vtk window title
         self.vtk_widget.set_vtk_window_title(
-            f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Detectando pontos fiduciais...")
+            f"Visualização do crânio: {self.vtk_handler.get_skull_volume_data().patient_name} \t\t\t\t\t\t Detectando pontos fiduciais...")
 
-    def predict_landm(self):
+    def detected_landmarks(self):
         self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_landmarks_detection(
-            self.skull.nifti_path)
+            self.vtk_handler.get_skull_volume_data().nifti_path)
 
         self.vtk_handler.set_sagittal_view()
 
