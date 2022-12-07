@@ -19,10 +19,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         renderer, render_window, self.vtk_window, self.frame = self.setup()
         self.vtk_handler = VtkHandler(render_window, renderer)
 
-        # control variables
-        self.skull = None
-
-        #  GUI components
         self.add_widgets()
 
         self.setWindowTitle(WINDOW_TITLE)
@@ -87,10 +83,10 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def set_skull(self, path: str):
         canSegmentateSkull = path.endswith("nii.gz")
         if canSegmentateSkull:
-            self.skull = self.vtk_handler.setup_skull_from_nifti_file(path)
+            self.vtk_handler.setup_skull_from_nifti_file(path)
             self.segmentation_settings_widget.segmentate_button.setHidden(True)
         else:
-            self.skull = self.vtk_handler.setup_skull_from_dicom_dir(path)
+            self.vtk_handler.setup_skull_from_dicom_dir(path)
             self.segmentation_settings_widget.segmentate_button.setHidden(
                 False)
 
@@ -106,7 +102,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
         # update vtk window title
         self.vtk_widget.set_vtk_window_title(
-            f"Visualização do crânio: {self.skull.patient_name}")
+            f"Visualização do crânio: {self.vtk_handler.get_skull_volume_data().patient_name}")
         self.vtk_handler.set_sagittal_view()
 
     def set_real_landmarks(self, file_path):
@@ -115,9 +111,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_detected_landmarks(self):
-        if self.skull is None:
-            return
-
         thread = Thread(target=self.predict_landm)
         thread.start()
         # update vtk window title
@@ -135,9 +128,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Pontos fiduciais detectados!")
 
     def clean_view(self):
-        # restart variables
-        self.skull = None
-
         # reset segmentation labels
         self.segmentation_settings_widget.reset_values()
         self.skull_settings_widget.reset_values()

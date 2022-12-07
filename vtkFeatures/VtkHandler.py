@@ -223,6 +223,9 @@ class VtkHandler:
         self._renderer.GetActiveCamera().Zoom(1.6)
         self._render_window.Render()
 
+    def get_skull_volume_data(self):
+        return self._skull
+
     def set_skull_opacity(self, opacity_value):
         if self._skull.property is None:
             return
