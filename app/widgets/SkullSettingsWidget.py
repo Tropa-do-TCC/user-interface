@@ -1,9 +1,9 @@
 import PyQt5.QtWidgets as QtWidgets
 from reconstruction.reconstruction import VtkHandler
 
-from widgets.common.DirectorySelector import DirectorySelector
-from widgets.common.FileSelector import FileSelector
-from widgets.common.Slider import Slider
+from app.widgets.common.DirectorySelector import DirectorySelector
+from app.widgets.common.FileSelector import FileSelector
+from app.widgets.common.Slider import Slider
 
 
 class SkullSettingsWidget:
@@ -38,10 +38,10 @@ class SkullSettingsWidget:
     def add_skull_opacity_slider(self, vtk_handler: VtkHandler):
         self.skull_opacity_slider = Slider(
             values=range(0, 101),
-            default_value=1,
+            default_value=100,
             default_label="Opacidade",
             show_value=False,
-            callback=vtk_handler.set_skull_opacity
+            custom_callback=vtk_handler.set_skull_opacity
         )
 
         self.group_layout.addWidget(

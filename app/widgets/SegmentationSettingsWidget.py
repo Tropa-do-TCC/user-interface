@@ -1,8 +1,8 @@
 import PyQt5.QtWidgets as QtWidgets
 from reconstruction.reconstruction import VtkHandler
 
-from widgets.common.Combobox import Combobox
-from widgets.common.Slider import Slider
+from app.widgets.common.Combobox import Combobox
+from app.widgets.common.Slider import Slider
 
 from default_parameters import DEFAULT_SEGMENTATION_ALG, DEFAULT_SEGMENTATION_DIMENSION, DEFAULT_SEGMENTATION_DIMENSION_LABEL, DEFAULT_SEGMENTATION_ENTROPY, DEFAULT_SEGMENTATION_ENTROPY_LABEL, DEFAULT_SEGMENTATION_GAMA, DEFAULT_SEGMENTATION_GAMA_LABEL
 

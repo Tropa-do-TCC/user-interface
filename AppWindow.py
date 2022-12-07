@@ -2,11 +2,11 @@ import vtk
 import PyQt5.QtWidgets as QtWidgets
 from threading import Thread
 
-from widgets.LandmarksSettingsWidgets import LandmarksSettingsWidgets
-from widgets.PatientAxesViewWidget import PatientAxesViewWidget
-from widgets.SegmentationSettingsWidget import SegmentationSettingsWidget
-from widgets.SkullSettingsWidget import SkullSettingsWidget
-from widgets.VtkWidget import VtkWidget
+from app.widgets.LandmarksSettingsWidgets import LandmarksSettingsWidgets
+from app.widgets.PatientAxesViewWidget import PatientAxesViewWidget
+from app.widgets.SegmentationSettingsWidget import SegmentationSettingsWidget
+from app.widgets.SkullSettingsWidget import SkullSettingsWidget
+from app.widgets.VtkWidget import VtkWidget
 
 from reconstruction.reconstruction import VtkHandler
 from default_parameters import WINDOW_TITLE
@@ -87,7 +87,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         export_menu.addAction(export_landmarks_action)
 
     def set_skull(self, path: str):
-
         canSegmentateSkull = path.endswith("nii.gz")
         if canSegmentateSkull:
             self.skull = self.vtk_handler.setup_skull_nifit(path)

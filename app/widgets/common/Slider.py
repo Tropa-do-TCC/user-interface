@@ -3,7 +3,7 @@ import PyQt5.QtWidgets as QtWidgets
 
 
 class Slider(QtWidgets.QSlider):
-    def __init__(self, values, default_label, default_value, callback=None, show_value=True, parent=None):
+    def __init__(self, values, default_label, default_value, custom_callback=None, show_value=True, parent=None):
         super().__init__(parent)
         self.setOrientation(Qt.Qt.Horizontal)
 
@@ -18,11 +18,12 @@ class Slider(QtWidgets.QSlider):
 
         self.default_label = default_label
 
-        self.label_instance = QtWidgets.QLabel(
-            f"{self.default_label} -> {self.default_value}")
+        label_text = f"{self.default_label} -> {self.default_value}" if show_value else default_label
+        self.label_instance = QtWidgets.QLabel(label_text)
 
-        self.valueChanged.connect(
-            lambda index: self.change_callback(values[index]) if callback is None else callback)
+        callback = self.change_callback if custom_callback is None else custom_callback
+
+        self.valueChanged.connect(lambda index: callback(values[index]))
 
     def set_label(self, value):
         self.label_instance.setText(f"{self.default_label} -> {value}")

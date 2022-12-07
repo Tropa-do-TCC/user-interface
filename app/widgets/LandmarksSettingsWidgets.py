@@ -1,5 +1,5 @@
 import PyQt5.QtWidgets as QtWidgets
-from widgets.common.FileSelector import FileSelector
+from app.widgets.common.FileSelector import FileSelector
 
 
 class LandmarksSettingsWidgets:
