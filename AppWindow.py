@@ -81,8 +81,9 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         export_menu.addAction(export_landmarks_action)
 
     def setup_skull(self, path: str):
-        canSegmentateSkull = path.endswith("nii.gz")
-        if canSegmentateSkull:
+        is_nifti_file = path.endswith("nii.gz")
+        
+        if is_nifti_file:
             self.vtk_handler.setup_skull_from_nifti_file(path)
             self.segmentation_settings_widget.segmentate_button.setHidden(True)
         else:
