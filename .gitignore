@@ -132,5 +132,5 @@ dmypy.json
 
 # custom
 dicom_dir*
-landmarks.json
+landmarks.*.json
 *.nii.gz
