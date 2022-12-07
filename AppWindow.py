@@ -48,7 +48,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         )
 
         self.skull_settings_widget = SkullSettingsWidget(
-            import_skull_callback=self.reconstruct_skull,
+            import_skull_callback=self.setup_skull,
             vtk_handler=self.vtk_handler,
             parent_grid=self.grid
         )
