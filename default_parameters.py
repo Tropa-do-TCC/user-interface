@@ -1,3 +1,6 @@
+WINDOW_TITLE = "Uma metodologia para reconstrução 3D de imagens médicas baseada em algoritmos bio-inspirados e aprendizagem profunda"
+
+# SEGMENTATION
 DEFAULT_SEGMENTATION_ALG = 'FFA'
 DEFAULT_SEGMENTATION_ENTROPY = 1
 DEFAULT_SEGMENTATION_DIMENSION = 2
@@ -6,3 +9,6 @@ DEFAULT_SEGMENTATION_GAMA = 1
 DEFAULT_SEGMENTATION_ENTROPY_LABEL = "Entropia"
 DEFAULT_SEGMENTATION_DIMENSION_LABEL = "Dimensão"
 DEFAULT_SEGMENTATION_GAMA_LABEL = "Gama"
+
+# VTK WINDOW
+DEFAULT_VTK_WINDOW_TITLE = "Visualização do crânio"

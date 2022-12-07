@@ -236,3 +236,8 @@ class VtkHandler:
             self._skull.dicom_dir, bioinspired, dimension, entropy, gama)
 
         self.setup_skull_dicom(self._skull.dicom_dir)
+
+    def reset_vtk_window(self):
+        self._renderer.RemoveAllViewProps()
+        self._renderer.Render()
+        self.set_sagittal_view()
