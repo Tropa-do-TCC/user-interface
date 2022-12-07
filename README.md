@@ -14,7 +14,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/Tropa-do-TCC/user-interface">
-    <img src="https://github.com/Tropa-do-TCC/user-interface/blob/main/images/skull_with_landmarks.png" alt="Logo" width="550">
+    <img src="https://user-images.githubusercontent.com/56837996/206245456-54ca5510-32c5-4d9e-a6b0-a3b9734d5bbe.png" alt="Logo" width="300">
   </a>
 </p>
 
