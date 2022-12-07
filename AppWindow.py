@@ -1,4 +1,3 @@
-import vtk
 import PyQt5.QtWidgets as QtWidgets
 from threading import Thread
 
@@ -8,7 +7,7 @@ from app.widgets.SegmentationSettingsWidget import SegmentationSettingsWidget
 from app.widgets.SkullSettingsWidget import SkullSettingsWidget
 from app.widgets.VtkWidget import VtkWidget
 
-from reconstruction.reconstruction import VtkHandler
+from vtkFeatures.VtkHandler import VtkHandler
 from default_parameters import WINDOW_TITLE
 
 
@@ -33,7 +32,6 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
 
     @staticmethod
     def setup():
-        renderer = vtk.vtkRenderer()
         frame = QtWidgets.QFrame()
         frame.setStyleSheet(open('styles.css').read())
 
@@ -89,10 +87,10 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
     def set_skull(self, path: str):
         canSegmentateSkull = path.endswith("nii.gz")
         if canSegmentateSkull:
-            self.skull = self.vtk_handler.setup_skull_nifit(path)
+            self.skull = self.vtk_handler.setup_skull_from_nifti_file(path)
             self.segmentation_settings_widget.segmentate_button.setHidden(True)
         else:
-            self.skull = self.vtk_handler.setup_skull_dicom(path)
+            self.skull = self.vtk_handler.setup_skull_from_dicom_dir(path)
             self.segmentation_settings_widget.segmentate_button.setHidden(
                 False)
 
@@ -112,7 +110,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
         self.vtk_handler.set_sagittal_view()
 
     def set_real_landmarks(self, file_path):
-        self.real_landmarks = self.vtk_handler.setup_landmarks_from_file(
+        self.real_landmarks = self.vtk_handler.setup_imported_landmarks(
             file_path)
         self.vtk_handler.set_sagittal_view()
 
@@ -127,7 +125,7 @@ class AppWindow(QtWidgets.QMainWindow, QtWidgets.QApplication):
             f"Visualização do crânio: {self.skull.patient_name} \t\t\t\t\t\t Detectando pontos fiduciais...")
 
     def predict_landm(self):
-        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_detected_landmarks(
+        self.real_landmarks, self.detected_landmarks = self.vtk_handler.setup_landmarks_detection(
             self.skull.nifti_path)
 
         self.vtk_handler.set_sagittal_view()

@@ -1,5 +1,5 @@
 import PyQt5.QtWidgets as QtWidgets
-from reconstruction.reconstruction import VtkHandler
+from vtkFeatures.VtkHandler import VtkHandler
 
 
 class PatientAxesViewWidget:

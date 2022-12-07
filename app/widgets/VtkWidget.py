@@ -30,7 +30,8 @@ class VtkWidget:
         vtk_window.GetRenderWindow().AddRenderer(renderer)
         render_window.AddRenderer(renderer)
         interactor.SetRenderWindow(render_window)
-        interactor.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
+        interactor.SetInteractorStyle(
+            vtk.vtkInteractorStyleTrackballCamera())
 
         render_window.Render()
         interactor.Initialize()

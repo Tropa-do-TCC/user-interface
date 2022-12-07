@@ -8,15 +8,7 @@ from utils.dicom_utils import get_patient_name
 from utils.landmarks_utils import (convert_landmarks_to_ras_coordinates,
                                    get_landmarks_from_network_infer,
                                    load_landmarks_from_file)
-
-
-class VtkVolume:
-    def __init__(self):
-        self.reader = None
-        self.property = None
-        self.patient_name = ''
-        self.nifti_path = ''
-        self.dicom_dir = ''
+from vtkFeatures.VtkVolume import VtkVolume
 
 
 class VtkHandler:
@@ -53,42 +45,6 @@ class VtkHandler:
         actor.SetMapper(mapper)
 
         return actor
-
-    def set_axial_view(self):
-        self._renderer.ResetCamera()
-        focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
-        position = self._renderer.GetActiveCamera().GetPosition()
-        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
-        self._renderer.GetActiveCamera().SetPosition(
-            focal_point[0], focal_point[1], focal_point[2] + distance)
-        self._renderer.GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
-        self._renderer.GetActiveCamera().Zoom(1.8)
-        self._render_window.Render()
-
-    def set_coronal_view(self):
-        self._renderer.ResetCamera()
-        focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
-        position = self._renderer.GetActiveCamera().GetPosition()
-        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
-        self._renderer.GetActiveCamera().SetPosition(
-            focal_point[0], focal_point[2] - distance, focal_point[1])
-        self._renderer.GetActiveCamera().SetViewUp(0.0, 0.5, 0.5)
-        self._renderer.GetActiveCamera().Zoom(1.8)
-        self._render_window.Render()
-
-    def set_sagittal_view(self):
-        self._renderer.ResetCamera()
-        focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
-        position = self._renderer.GetActiveCamera().GetPosition()
-        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
-            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
-        self._renderer.GetActiveCamera().SetPosition(
-            focal_point[2] + distance, focal_point[0], focal_point[1])
-        self._renderer.GetActiveCamera().SetViewUp(0.0, 0.0, 1.0)
-        self._renderer.GetActiveCamera().Zoom(1.6)
-        self._render_window.Render()
 
     def _reconstruct_skull(self, file_name):
         reader = vtk.vtkNIFTIImageReader()
@@ -164,13 +120,7 @@ class VtkHandler:
 
         return points
 
-    def set_skull_opacity(self, opacity_value):
-        if self._skull.property is None:
-            return
-        self._skull.property.SetOpacity(opacity_value / 100)
-        self._render_window.Render()
-
-    def setup_detected_landmarks(self, path_skull):
+    def setup_landmarks_detection(self, path_skull):
         real_landmarks, detected_landmarks = get_landmarks_from_network_infer(
             path_skull)
 
@@ -187,7 +137,7 @@ class VtkHandler:
 
         return self._real_landmarks, self._detected_landmarks
 
-    def setup_landmarks_from_file(self, file_path):
+    def setup_imported_landmarks(self, file_path):
         real_landmarks = load_landmarks_from_file(file_path)
 
         real_landmarks_actor, real_landmarks_props = self._get_landmarks_shape(
@@ -199,7 +149,7 @@ class VtkHandler:
 
         return self._real_landmarks
 
-    def setup_skull_dicom(self, dicom_dir_path):
+    def setup_skull_from_dicom_dir(self, dicom_dir_path):
         self._renderer.Clear()
         nifti_file_name = get_nifti_from_dicomdir(dicom_dir_path)
         patient_name = get_patient_name(dicom_dir_path)
@@ -216,7 +166,7 @@ class VtkHandler:
 
         return self._skull
 
-    def setup_skull_nifit(self, file_path):
+    def setup_skull_from_nifti_file(self, file_path):
         self._renderer.Clear()
         actor, reader, property = self._reconstruct_skull(file_path)
 
@@ -235,7 +185,49 @@ class VtkHandler:
         self._skull.dicom_dir = segmentate(
             self._skull.dicom_dir, bioinspired, dimension, entropy, gama)
 
-        self.setup_skull_dicom(self._skull.dicom_dir)
+        self.setup_skull_from_dicom_dir(self._skull.dicom_dir)
+
+    def set_axial_view(self):
+        self._renderer.ResetCamera()
+        focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
+        position = self._renderer.GetActiveCamera().GetPosition()
+        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
+            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+        self._renderer.GetActiveCamera().SetPosition(
+            focal_point[0], focal_point[1], focal_point[2] + distance)
+        self._renderer.GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
+        self._renderer.GetActiveCamera().Zoom(1.8)
+        self._render_window.Render()
+
+    def set_coronal_view(self):
+        self._renderer.ResetCamera()
+        focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
+        position = self._renderer.GetActiveCamera().GetPosition()
+        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
+            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+        self._renderer.GetActiveCamera().SetPosition(
+            focal_point[0], focal_point[2] - distance, focal_point[1])
+        self._renderer.GetActiveCamera().SetViewUp(0.0, 0.5, 0.5)
+        self._renderer.GetActiveCamera().Zoom(1.8)
+        self._render_window.Render()
+
+    def set_sagittal_view(self):
+        self._renderer.ResetCamera()
+        focal_point = self._renderer.GetActiveCamera().GetFocalPoint()
+        position = self._renderer.GetActiveCamera().GetPosition()
+        distance = math.sqrt((position[0] - focal_point[0]) ** 2 + (
+            position[1] - focal_point[1]) ** 2 + (position[2] - focal_point[2]) ** 2)
+        self._renderer.GetActiveCamera().SetPosition(
+            focal_point[2] + distance, focal_point[0], focal_point[1])
+        self._renderer.GetActiveCamera().SetViewUp(0.0, 0.0, 1.0)
+        self._renderer.GetActiveCamera().Zoom(1.6)
+        self._render_window.Render()
+
+    def set_skull_opacity(self, opacity_value):
+        if self._skull.property is None:
+            return
+        self._skull.property.SetOpacity(opacity_value / 100)
+        self._render_window.Render()
 
     def reset_vtk_window(self):
         self._renderer.RemoveAllViewProps()
